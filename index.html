@@ -1,0 +1,2767 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Beyond Tech helps enterprises turn AI ambition into measurable business outcomes, from strategy and governance to intelligent workflows and managed AI operations.">
+<title>Beyond Tech — Beyond AI Hype. Into Business Impact.</title>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.cdnfonts.com/css/rostex">
+<style>
+  :root {
+    --streak: #e8e8e8;
+    --scroll-length: 180vh;
+    --bg: #000000;
+    --ink: #f0f0f0;
+    --muted: #9a9a9a;
+    --line: #2a2a2a;
+    --cyan: #e8e8e8;
+    --panel: #111111;
+    --display: 'Rostex', 'IBM Plex Sans', sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 96px;
+    scroll-snap-type: y proximity;
+  }
+  html, body { margin: 0; background: #000; color: var(--ink); }
+  body {
+    font-family: 'IBM Plex Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    line-height: 1.65; -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+  h1, h2, h3, p { margin-top: 0; }
+
+  /* Fixed starfield — continuous through jump + rest of site */
+  .space-canvas {
+    position: fixed; inset: 0;
+    width: 100%; height: 100%;
+    display: block;
+    z-index: 0;
+    pointer-events: none;
+  }
+  .jump-veil {
+    position: fixed; inset: 0;
+    z-index: 50;
+    pointer-events: none;
+    opacity: 0;
+    background:
+      radial-gradient(circle at 50% 48%, rgba(255,255,255,.92) 0%, rgba(255,255,255,.28) 26%, rgba(0,0,0,.55) 58%, #000 100%);
+    will-change: opacity;
+  }
+  .site-shell {
+    position: relative; z-index: 1;
+    transition: opacity .95s cubic-bezier(0.22, 1, 0.36, 1), filter .95s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  html.is-jumping,
+  html.is-jump-settle,
+  html.is-jumping body,
+  html.is-jump-settle body {
+    overflow: hidden;
+    overscroll-behavior: none;
+  }
+  html.is-jumping,
+  html.is-jump-settle { scroll-behavior: auto; scroll-snap-type: none; }
+  html.is-jumping .site-shell {
+    opacity: 0;
+    filter: blur(8px) saturate(0.85);
+    pointer-events: none;
+    transition-duration: .55s;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  html.is-jump-settle .site-shell {
+    opacity: 1;
+    filter: none;
+    pointer-events: none;
+  }
+  html.is-jumping .bt-chat,
+  html.is-jump-settle .bt-chat { opacity: 0; pointer-events: none; transition: opacity .4s ease; }
+
+  /* ---------- Site header ---------- */
+  .site-header {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 40;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 6vw;
+    pointer-events: none;
+    background: linear-gradient(180deg, rgba(0,0,0,.82) 0%, rgba(0,0,0,.55) 70%, rgba(0,0,0,0) 100%);
+    backdrop-filter: blur(14px) saturate(1.1);
+    -webkit-backdrop-filter: blur(14px) saturate(1.1);
+    border-bottom: 1px solid rgba(255,255,255,.04);
+  }
+  .site-header::after {
+    content: '';
+    position: absolute; left: 0; right: 0; top: 100%; height: 28px;
+    background: linear-gradient(180deg, rgba(0,0,0,.35), transparent);
+    pointer-events: none;
+  }
+  .site-header a { pointer-events: auto; }
+  .logo-link {
+    display: inline-flex; align-items: center;
+    line-height: 0; text-decoration: none;
+  }
+  .logo-link img {
+    display: block;
+    height: clamp(48px, 5.5vw, 64px);
+    width: auto;
+  }
+  .site-nav {
+    display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end;
+    gap: 8px clamp(16px, 2.2vw, 32px);
+  }
+  .site-nav a {
+    font-size: 14px; font-weight: 500;
+    letter-spacing: 0.03em;
+    color: #b8b8b8;
+    transition: color .2s ease;
+  }
+  .site-nav a:hover,
+  .site-nav a:focus-visible { color: #fff; outline: none; }
+  .site-nav .nav-cta {
+    border: 1px solid #555;
+    border-radius: 4px;
+    padding: 10px 16px;
+    color: #eee;
+  }
+  .site-nav .nav-cta:hover { border-color: var(--cyan); color: #fff; }
+  .nav-toggle {
+    display: none;
+    pointer-events: auto;
+    position: relative; z-index: 2;
+    width: 44px; height: 44px; padding: 0;
+    border: 1px solid #444; border-radius: 4px;
+    background: rgba(0,0,0,.55); cursor: pointer;
+  }
+  .nav-toggle span {
+    display: block; width: 16px; height: 1.5px; margin: 5px auto;
+    background: #eee; transition: transform .2s ease, opacity .2s ease;
+  }
+  .site-header.is-nav-open .nav-toggle span:first-child {
+    transform: translateY(3.25px) rotate(45deg);
+  }
+  .site-header.is-nav-open .nav-toggle span:last-child {
+    transform: translateY(-3.25px) rotate(-45deg);
+  }
+
+  /* ---------- Warp intro ---------- */
+  .hero { position: relative; height: var(--scroll-length); scroll-snap-align: start; }
+  .stage {
+    position: sticky; top: 0; height: 100vh; overflow: hidden;
+    background: transparent;
+  }
+  .vignette {
+    position: absolute; inset: 0; pointer-events: none; z-index: 1;
+    background: radial-gradient(ellipse at center, rgba(0,0,0,0) 42%, rgba(0,0,0,.55) 100%);
+  }
+
+  .brand {
+    position: absolute; inset: 0; margin: 0; padding: 0 5vw;
+    pointer-events: none;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px;
+    text-align: center;
+    z-index: 2;
+    will-change: transform, opacity, filter;
+  }
+  .title {
+    margin: 0;
+    display: flex; align-items: center; justify-content: center;
+    width: min(98vw, 1600px);
+    font-family: var(--display);
+    font-size: clamp(40px, 12vw, 160px);
+    font-weight: 400;
+    letter-spacing: 0.08em; line-height: 1; color: #fff;
+    text-transform: uppercase;
+  }
+  .title span { display: inline-block; white-space: pre; will-change: transform, opacity, filter; }
+  .tagline {
+    margin: 0;
+    max-width: min(92vw, 720px);
+    font-size: clamp(15px, 1.9vw, 20px);
+    font-weight: 400;
+    line-height: 1.4;
+    letter-spacing: 0.01em;
+    color: #c4c4c4;
+    will-change: opacity, filter;
+  }
+
+  .hint {
+    position: absolute; left: 0; right: 0; bottom: 40px; pointer-events: none;
+    display: flex; flex-direction: column; align-items: center; gap: 12px;
+    font-size: 12px; letter-spacing: .28em; text-transform: uppercase; color: #9a9a9a;
+    z-index: 2;
+  }
+  .flash {
+    position: absolute; inset: 0; pointer-events: none; opacity: 0; z-index: 3;
+    background: radial-gradient(circle at center, #fff 0%, #ddd 40%, transparent 70%);
+  }
+
+  /* ---------- Arrival = destination along optical axis ---------- */
+  .arrival {
+    position: absolute; inset: 0;
+    padding: 90px 6vw 40px;
+    display: grid;
+    grid-template-columns: 1.08fr 1fr;
+    align-items: center;
+    gap: clamp(16px, 3vw, 40px);
+    opacity: 0; visibility: hidden;
+    pointer-events: none;
+    perspective: 1600px;
+    transform-origin: 50% 50%;
+    transform-style: preserve-3d;
+    will-change: transform, opacity, filter, clip-path;
+    z-index: 2;
+    background: transparent;
+  }
+  .arrival.is-active { pointer-events: auto; }
+
+  .arrival-copy { position: relative; z-index: 1; min-width: 0; }
+  .eyebrow {
+    display: flex; align-items: center; gap: 10px;
+    margin: 0 0 22px;
+    font-size: 10px; font-weight: 600;
+    letter-spacing: 1.6px; text-transform: uppercase; color: #b0b0b0;
+  }
+  .signal {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: #ddd; box-shadow: 0 0 10px rgba(255, 255, 255, 0.25);
+    flex-shrink: 0;
+  }
+  .arrival h2 {
+    margin: 0 0 22px;
+    max-width: none;
+    font-size: clamp(36px, 4.6vw, 72px);
+    font-weight: 500;
+    line-height: 1.08;
+    letter-spacing: -0.04em;
+  }
+  .gradient-text {
+    background: linear-gradient(105deg, #fff 0%, #bdbdbd 83%);
+    background-clip: text; -webkit-background-clip: text; color: transparent;
+  }
+  .arrival p.lead {
+    margin: 0;
+    max-width: 465px;
+    font-size: clamp(14px, 1.5vw, 16px);
+    line-height: 1.85;
+    color: #b0b0b0;
+  }
+  .arrival-actions {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 20px 28px;
+    margin-top: 28px;
+  }
+  .cta-primary {
+    display: inline-flex; align-items: center; gap: 18px;
+    padding: 14px 19px;
+    font: inherit; font-size: 12px; font-weight: 600;
+    color: #0a0a0a; background: #fff; text-decoration: none;
+    border: 1px solid #fff; border-radius: 4px;
+    transition: background .2s ease, color .2s ease, transform .2s ease;
+  }
+  .cta-primary:hover,
+  .cta-primary:focus-visible {
+    background: transparent; color: #fff; transform: translateY(-1px); outline: none;
+  }
+  .cta-secondary {
+    font-size: 12px; font-weight: 500; color: #c8c8c8;
+    text-decoration: none; display: inline-flex; align-items: center; gap: 14px;
+    border: 0; padding: 0;
+    transition: color .2s ease;
+  }
+  .cta-secondary:hover,
+  .cta-secondary:focus-visible { color: #fff; outline: none; }
+  .arrival-note {
+    display: flex; align-items: center; gap: 10px;
+    margin-top: 36px;
+    font-size: 10px; color: #8a8a8a;
+  }
+  .arrival-note .short-line {
+    width: 23px; height: 1px; background: #555; flex-shrink: 0;
+  }
+
+  .hero-visual {
+    position: relative;
+    align-self: stretch;
+    min-height: min(490px, 68vh);
+    min-width: 0;
+    isolation: isolate;
+    display: flex; flex-direction: column;
+  }
+  .visual-top {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    color: #8a8a8a; font-size: 8px; letter-spacing: 1.6px; text-transform: uppercase;
+    margin-bottom: 8px; flex-shrink: 0;
+  }
+  .mono { font-variant-numeric: tabular-nums; }
+
+  .orbit-stage {
+    position: relative;
+    flex: 1;
+    min-height: min(400px, 56vh);
+  }
+  .orbit {
+    width: 100%; height: 100%;
+    min-height: min(400px, 56vh);
+    overflow: visible;
+    display: block;
+  }
+  .orbit-label {
+    position: absolute;
+    z-index: 2;
+    left: 0; top: 0;
+    font-size: 12px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase;
+    background: rgba(12, 12, 12, 0.88); border: 1px solid #3a3a3a;
+    padding: 9px 13px; border-radius: 3px;
+    box-shadow: 0 5px 20px rgba(0,0,0,.35);
+    display: inline-flex; align-items: center;
+    backdrop-filter: blur(6px);
+    white-space: nowrap;
+    will-change: transform;
+    pointer-events: none;
+  }
+
+  .visual-bottom {
+    display: flex; align-items: center; justify-content: center; gap: 18px;
+    margin-top: 14px; flex-shrink: 0;
+    color: #8a8a8a; font-size: 9px; letter-spacing: 1.8px; text-transform: uppercase;
+    width: 100%;
+  }
+  .visual-bottom .step {
+    flex-shrink: 0; white-space: nowrap;
+    opacity: 0;
+    transform: translateX(-28px);
+  }
+  .visual-bottom .visual-line {
+    opacity: 0;
+    transform: scaleX(0.4);
+    transform-origin: left center;
+  }
+  .arrival.is-active .visual-bottom .step,
+  .arrival.is-active .visual-bottom .visual-line {
+    animation: step-swipe-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+  .arrival.is-active .visual-bottom .step:nth-child(1) { animation-delay: 0.08s; }
+  .arrival.is-active .visual-bottom .visual-line:nth-child(2) { animation-delay: 0.22s; }
+  .arrival.is-active .visual-bottom .step:nth-child(3) { animation-delay: 0.36s; }
+  .arrival.is-active .visual-bottom .visual-line:nth-child(4) { animation-delay: 0.5s; }
+  .arrival.is-active .visual-bottom .step:nth-child(5) { animation-delay: 0.64s; }
+  @keyframes step-swipe-in {
+    to { opacity: 1; transform: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .visual-bottom .step,
+    .visual-bottom .visual-line {
+      opacity: 1; transform: none; animation: none !important;
+    }
+  }
+  .visual-line {
+    height: 1px; background: #444;
+    width: clamp(28px, 6vw, 56px); flex: 0 0 auto;
+  }
+
+  /* ---------- Following content (sits on starfield) ---------- */
+  .content { background: transparent; }
+  .wrap { width: min(1280px, 88%); margin-inline: auto; }
+  .section {
+    min-height: 100vh;
+    padding: 110px 0 72px;
+    display: flex; flex-direction: column; justify-content: center;
+    scroll-snap-align: start;
+   
+  }
+  .section > .wrap,
+  .section.wrap,
+  .bt-locations > .wrap,
+  .about-section > .wrap,
+  .contact-section > .wrap { width: min(1280px, 88%); margin-inline: auto; }
+  .content > .section:first-child { padding-top: 110px; }
+
+  .section-heading {
+    display: flex; align-items: end; justify-content: space-between; gap: 50px;
+    margin-bottom: 44px;
+  }
+  .section-heading h2 {
+    margin: 0;
+    font-size: clamp(28px, 3.2vw, 48px);
+    font-weight: 500; letter-spacing: -0.03em; line-height: 1.16;
+  }
+  .muted-heading { color: #8a8a8a; }
+  .section-intro {
+    margin: 0; max-width: 335px;
+    font-size: 14px; line-height: 1.8; color: var(--muted);
+  }
+  .section-eyebrow {
+    margin: 0 0 18px;
+    font-size: 10px; font-weight: 600; letter-spacing: 1.8px;
+    text-transform: uppercase; color: #b0b0b0;
+  }
+
+  /* Expertise: copy left, 2×2 cards right */
+  .expertise-layout {
+    display: grid;
+    grid-template-columns: minmax(240px, 0.9fr) minmax(0, 1.2fr);
+    gap: clamp(36px, 5vw, 72px);
+    align-items: center;
+  }
+  .expertise-copy h2 {
+    margin: 0;
+    font-size: clamp(28px, 3.4vw, 48px);
+    font-weight: 500; letter-spacing: -0.03em; line-height: 1.14;
+    max-width: 11ch;
+  }
+  .expertise-copy h2 .swipe-line {
+    display: block;
+    opacity: 0;
+    transform: translateX(-40px);
+    will-change: transform, opacity;
+  }
+  .expertise-copy.is-inview h2 .swipe-line {
+    animation: headline-swipe-in 0.85s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+  .expertise-copy.is-inview h2 .swipe-line:nth-child(1) { animation-delay: 0.06s; }
+  .expertise-copy.is-inview h2 .swipe-line:nth-child(2) { animation-delay: 0.28s; }
+  @keyframes headline-swipe-in {
+    to { opacity: 1; transform: translateX(0); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .expertise-copy h2 .swipe-line {
+      opacity: 1; transform: none; animation: none !important;
+    }
+  }
+  .service-grid {
+    display: grid;
+    border: 1px solid var(--line);
+    border-radius: 5px;
+    overflow: hidden;
+  }
+  .expertise-layout .service-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .service-card {
+    padding: 25px 23px 28px;
+    background: rgba(12, 12, 12, 0.72);
+    border-right: 1px solid var(--line);
+    backdrop-filter: blur(8px);
+  }
+  .expertise-layout .service-card {
+    border-bottom: 1px solid var(--line);
+  }
+  .expertise-layout .service-card:nth-child(2n) { border-right: 0; }
+  .expertise-layout .service-card:nth-child(n+3) { border-bottom: 0; }
+  .service-card[data-industry] { cursor: pointer; }
+
+  /* Industries: single aligned row */
+  .industries-section {
+    justify-content: flex-start;
+    padding-top: 88px;
+    padding-bottom: 64px;
+  }
+  .industries-section .section-heading {
+    margin-bottom: 36px;
+  }
+  .industries-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    align-items: stretch;
+    padding-bottom: 24px;
+  }
+  .industries-grid .service-card {
+    border: 1px solid var(--line);
+    border-radius: 5px;
+    border-right: 1px solid var(--line);
+    margin: 0;
+    transform: none;
+    padding: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    background: rgba(0, 0, 0, 0.72);
+  }
+  .industries-grid .service-card .bt-pixel-art {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    background: #000;
+    flex-shrink: 0;
+  }
+  .industries-grid .service-card .industry-copy {
+    padding: 18px 18px 22px;
+    border-top: 1px solid var(--line);
+  }
+  .card-index {
+    display: flex; justify-content: space-between;
+    color: #7a7a7a; font-size: 9px; letter-spacing: 1px;
+  }
+  .service-card h3 {
+    margin: 22px 0 12px;
+    font-size: clamp(18px, 1.5vw, 22px); font-weight: 500; line-height: 1.3; letter-spacing: -0.02em;
+    min-height: 52px;
+  }
+  .service-card p {
+    margin: 0 0 18px;
+    font-size: 14px; line-height: 1.7; color: #b0b0b0;
+  }
+  .card-tags {
+    display: block;
+    font-size: 10px; letter-spacing: 0.75px; color: #9a9a9a;
+    border-top: 1px solid #2a2a2a; padding-top: 16px;
+  }
+
+  .about-section {
+    background: transparent;
+    min-height: 100vh;
+    padding: 110px 0 72px;
+    display: flex; flex-direction: column; justify-content: center;
+    scroll-snap-align: start;
+   
+  }
+  .about-grid {
+    display: grid;
+    grid-template-columns: 0.9fr 1.1fr;
+    gap: clamp(40px, 6vw, 90px);
+    align-items: center;
+  }
+  .about-copy h2 {
+    margin: 0 0 22px;
+    font-size: clamp(28px, 3vw, 37px);
+    font-weight: 500; letter-spacing: -0.03em; line-height: 1.16;
+  }
+  .about-copy > p:not(.section-eyebrow) {
+    font-size: 13px; line-height: 1.9; color: #a8a8a8;
+  }
+  .about-principles {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    margin: 24px 0 0;
+  }
+  .about-principles span {
+    font-size: 9px; border: 1px solid #333333; border-radius: 3px;
+    padding: 6px 9px; color: #a8a8a8;
+  }
+
+  .contact-section {
+    min-height: 100vh;
+    padding: 110px 0 72px;
+    background: transparent;
+    display: flex; flex-direction: column; justify-content: center;
+    scroll-snap-align: start;
+  }
+  .contact-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.35fr);
+    gap: clamp(36px, 5vw, 72px);
+    align-items: start;
+  }
+  .contact-grid h2 {
+    margin: 0 0 20px;
+    font-size: clamp(36px, 5vw, 64px);
+    font-weight: 500; letter-spacing: -0.04em; line-height: 1.08;
+  }
+  .contact-grid > div > p:not(.section-eyebrow) {
+    font-size: 14px; color: #a8a8a8; max-width: 350px; line-height: 1.8;
+  }
+  .contact-email {
+    display: inline-block;
+    font-size: 18px;
+    border-bottom: 1px solid #555555;
+    padding-bottom: 8px;
+    margin: 15px 0 20px;
+  }
+  .contact-location {
+    display: block;
+    font-size: 10px; color: #888888;
+  }
+  .contact-form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    width: 100%;
+    max-width: none;
+  }
+  .contact-form__title {
+    margin: 0 0 4px;
+    font-family: var(--display);
+    font-size: clamp(22px, 2.4vw, 28px);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+  }
+  .contact-form__hint {
+    margin: 0 0 8px;
+    font-size: 13px;
+    color: #9a9a9a;
+    line-height: 1.55;
+    max-width: none;
+  }
+  .contact-form__row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+  .contact-field {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+  .contact-field label {
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #888;
+  }
+  .contact-field input,
+  .contact-field textarea {
+    width: 100%;
+    margin: 0;
+    padding: 12px 14px;
+    font: inherit;
+    font-size: 14px;
+    color: #f0f0f0;
+    background: rgba(255,255,255,.04);
+    border: 1px solid #2a2a2a;
+    border-radius: 4px;
+    outline: none;
+    transition: border-color .2s ease, background .2s ease;
+  }
+  .contact-field input::placeholder,
+  .contact-field textarea::placeholder {
+    color: #666;
+  }
+  .contact-field input:hover,
+  .contact-field textarea:hover {
+    border-color: #3a3a3a;
+  }
+  .contact-field input:focus,
+  .contact-field textarea:focus {
+    border-color: #888;
+    background: rgba(255,255,255,.06);
+  }
+  .contact-field textarea {
+    min-height: 110px;
+    resize: vertical;
+    line-height: 1.5;
+  }
+  .contact-form__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px;
+    margin-top: 4px;
+  }
+  .contact-form .cta-primary {
+    cursor: pointer;
+  }
+  .contact-form__note {
+    margin: 0;
+    font-size: 11px;
+    color: #777;
+  }
+  .contact-form.is-sent .contact-form__fields,
+  .contact-form.is-sent .contact-form__actions {
+    display: none;
+  }
+  .contact-form__thanks {
+    display: none;
+    padding: 28px 0 8px;
+  }
+  .contact-form.is-sent .contact-form__thanks {
+    display: block;
+  }
+  .contact-form__thanks p {
+    margin: 0;
+    font-size: 15px;
+    color: #c8c8c8;
+    line-height: 1.6;
+    max-width: none;
+  }
+  .contact-form__thanks strong {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 18px;
+    font-weight: 600;
+    color: #fff;
+  }
+  @media (max-width: 560px) {
+    .contact-form__row { grid-template-columns: 1fr; }
+    .contact-form { margin-left: 0; max-width: none; }
+  }
+
+  /* ---------- Architecture diagram ---------- */
+  .bt-arch {
+    position: relative;
+    padding: 96px 0 88px;
+    overflow: hidden;
+    scroll-snap-align: start;
+  }
+  .bt-arch__inner { width: min(1280px, 88%); margin-inline: auto; }
+  .bt-arch__head {
+    margin-bottom: 40px;
+    max-width: 720px;
+  }
+  .bt-arch__head h2 {
+    margin: 0;
+    font-size: clamp(36px, 5vw, 64px);
+    font-weight: 500;
+    letter-spacing: -0.04em;
+    line-height: 1.08;
+  }
+  .bt-modes {
+    display: flex; flex-wrap: wrap; gap: 10px;
+    margin: 0 0 20px; padding: 0; list-style: none;
+  }
+  .bt-mode {
+    min-height: 40px; padding: 0 16px; border-radius: 4px; cursor: pointer;
+    border: 1px solid #2a2a2a; background: transparent; color: #b0b0b0;
+    font-family: 'IBM Plex Mono', 'IBM Plex Sans', monospace;
+    font-size: 11px; letter-spacing: .1em; text-transform: uppercase;
+    transition: border-color .25s ease, color .25s ease, background .25s ease;
+  }
+  .bt-mode:hover { border-color: #555; color: #fff; }
+  .bt-mode[aria-pressed="true"] {
+    border-color: #c8c8c8; color: #fff; background: rgba(255,255,255,.08);
+  }
+  .bt-mode:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+  .bt-stage {
+    position: relative;
+    border: 1px solid #2a2a2a;
+    border-radius: 8px;
+    background: rgba(0,0,0,.65);
+    overflow-x: auto;
+  }
+  .bt-stage svg { display: block; width: 100%; min-width: 880px; height: auto; }
+  .bt-caption {
+    display: flex; align-items: center; gap: 12px; min-height: 56px; margin: 16px 0 0;
+    font-size: 15px; color: #a8a8a8;
+  }
+  .bt-caption b {
+    font-family: 'IBM Plex Mono', 'IBM Plex Sans', monospace;
+    font-weight: 500; font-size: 11px; letter-spacing: .14em;
+    text-transform: uppercase; color: #e8e8e8; white-space: nowrap;
+  }
+  .bt-arch .lbl {
+    font-family: 'IBM Plex Sans', sans-serif; font-size: 17px; font-weight: 500;
+    fill: #f2f2f2; paint-order: stroke fill;
+  }
+  .bt-arch .sub {
+    font-family: 'IBM Plex Sans', sans-serif; font-size: 13px;
+    fill: #b0b0b0;
+  }
+  .bt-arch .mono {
+    font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+    letter-spacing: .14em; fill: #9a9a9a; text-transform: uppercase;
+  }
+  .bt-arch .arch-col-label {
+    font-family: 'IBM Plex Sans', 'IBM Plex Mono', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: .12em;
+    fill: #ffffff;
+    text-transform: uppercase;
+  }
+  .bt-arch .mono-a {
+    font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+    letter-spacing: .16em; fill: #f0f0f0;
+  }
+  .bt-arch .sys rect.frame {
+    fill: #111; stroke: #4a4a4a; stroke-width: 1.6;
+    transition: stroke .25s ease;
+  }
+  .bt-arch .sys .led { fill: #666; transition: fill .25s ease; }
+  .bt-arch .sys:hover rect.frame,
+  .bt-arch .sys.is-on rect.frame { stroke: #e8e8e8; }
+  .bt-arch .sys.is-on .led,
+  .bt-arch .sys:hover .led { fill: #fff; }
+  .bt-arch .sys { cursor: pointer; transition: opacity .3s ease; }
+  .bt-arch .sys:focus-visible rect.frame { stroke: #fff; }
+  .bt-arch .sys:focus { outline: none; }
+  .bt-arch .wire {
+    fill: none; stroke: #3a3a3a; stroke-width: 2.2;
+    transition: stroke .3s ease, opacity .3s ease;
+  }
+  .bt-arch .wire.hot { stroke: #c0c0c0; stroke-width: 2.4; }
+  .bt-arch .dim { opacity: .28; }
+  .bt-arch .core-frame { fill: url(#coreFill); stroke: #5a5a5a; stroke-width: 1.8; }
+  .bt-arch .gov {
+    fill: none; stroke: #777; stroke-width: 1.8;
+    stroke-dasharray: 3 8; stroke-linecap: round;
+    animation: gov-march 6s linear infinite;
+  }
+  @keyframes gov-march { to { stroke-dashoffset: -110; } }
+  .bt-arch .mod > rect {
+    fill: rgba(18, 18, 18, 0.78);
+    stroke: #555;
+    stroke-width: 1.6;
+  }
+  .bt-arch .agent-node {
+    fill: #1a1a1a;
+    stroke: #888;
+    stroke-width: 1.6;
+  }
+  .bt-arch .out rect.frame {
+    fill: #111;
+    stroke: #4a4a4a;
+    stroke-width: 1.6;
+  }
+  .bt-arch .out .meter-bg { fill: #2a2a2a; }
+  .bt-arch .out .meter { fill: url(#meterGrad); }
+  .bt-arch .out { transition: opacity .35s ease; }
+  .bt-arch #particles { pointer-events: none; }
+  @media (prefers-reduced-motion: reduce) {
+    .bt-arch .gov { animation: none; }
+  }
+
+  .site-footer {
+    background: transparent;
+    padding: 28px 0 36px;
+    font-size: 11px; color: #888888;
+    scroll-snap-align: end;
+  }
+  .site-footer .wrap {
+    display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap;
+  }
+
+
+  /* ---------- Locations map ---------- */
+  .bt-locations {
+    min-height: 100vh;
+    padding: 110px 0 72px;
+    display: flex; flex-direction: column; justify-content: center;
+    scroll-snap-align: start;
+   
+  }
+  .bt-locations__head {
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr;
+    gap: clamp(24px, 4vw, 60px);
+    align-items: end;
+    margin-bottom: 48px;
+  }
+  .bt-locations__title {
+    margin: 0;
+    font-family: var(--display);
+    font-size: clamp(36px, 4.6vw, 64px);
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+  }
+  .bt-locations__title em {
+    font-style: normal;
+    font-weight: 700;
+    color: #9a9a9a;
+  }
+  .bt-locations__meta {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: flex-end;
+    text-align: right;
+  }
+  .bt-locations__meta span {
+    font-size: 13px;
+    color: #c8c8c8;
+    white-space: nowrap;
+  }
+  .bt-locations__meta span b {
+    font-weight: 500;
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    color: #888;
+    margin-left: 12px;
+    vertical-align: super;
+  }
+  .bt-locations__note {
+    font-size: 9px;
+    letter-spacing: 1.6px;
+    text-transform: uppercase;
+    color: #777;
+    margin-top: 6px;
+  }
+  .bt-map {
+    position: relative;
+    max-width: 1280px;
+    margin: 0 auto;
+    aspect-ratio: var(--ratio, 225 / 89);
+  }
+  .bt-map canvas {
+    position: absolute; inset: 0; width: 100%; height: 100%; display: block;
+  }
+  .bt-pin {
+    position: absolute; transform: translate(-50%, -50%);
+    width: 32px; height: 32px; padding: 0; border: 0; background: none; cursor: pointer;
+    display: grid; place-items: center; color: inherit; font: inherit;
+    opacity: 0; transition: opacity .6s ease;
+  }
+  .bt-map.is-visible .bt-pin { opacity: 1; transition-delay: var(--delay, .6s); }
+  .bt-pin__core {
+    width: 9px; height: 9px; border-radius: 50%; background: #fff;
+    box-shadow: 0 0 0 2px rgba(0,0,0,.65), 0 0 14px 3px rgba(255,255,255,.35);
+    position: relative; z-index: 1; pointer-events: none;
+  }
+  .bt-pin__ring {
+    pointer-events: none;
+    position: absolute; width: 9px; height: 9px; border-radius: 50%;
+    border: 1.5px solid rgba(255,255,255,.85); opacity: 0;
+    animation: bt-pulse 2.4s cubic-bezier(.2,.6,.3,1) infinite;
+  }
+  .bt-pin__ring:nth-child(2) { animation-delay: 1.2s; }
+  @keyframes bt-pulse {
+    0%   { transform: scale(1);   opacity: .85; }
+    100% { transform: scale(4.6); opacity: 0; }
+  }
+  .bt-pin__label {
+    z-index: 2;
+    position: absolute; left: 50%; bottom: calc(100% - 4px); transform: translate(-50%, 4px);
+    white-space: nowrap; padding: 8px 12px; border-radius: 3px;
+    background: rgba(10, 10, 10, .9); border: 1px solid #333;
+    font-size: 12px; line-height: 1.25; text-align: left;
+    pointer-events: none; transition: transform .25s ease, border-color .25s ease;
+    backdrop-filter: blur(6px);
+    display: flex; align-items: baseline; gap: 10px;
+  }
+  .bt-pin__label b {
+    font-weight: 500; font-size: 10px; letter-spacing: .12em; color: #fff;
+  }
+  .bt-pin__label strong { font-weight: 500; color: #ddd; }
+  .bt-pin--bottom .bt-pin__label { bottom: auto; top: calc(100% - 4px); transform: translate(-50%, -4px); }
+  .bt-pin--right .bt-pin__label { bottom: auto; left: calc(100% - 2px); top: 50%; transform: translate(-4px, -50%); }
+  .bt-pin--left .bt-pin__label { bottom: auto; left: auto; right: calc(100% - 2px); top: 50%; transform: translate(4px, -50%); }
+  .bt-pin:hover, .bt-pin:focus-visible { z-index: 3; }
+  .bt-pin:hover .bt-pin__label, .bt-pin:focus-visible .bt-pin__label { border-color: #fff; }
+  .bt-pin--top:hover .bt-pin__label, .bt-pin--top:focus-visible .bt-pin__label { transform: translate(-50%, 0); }
+  .bt-pin--bottom:hover .bt-pin__label, .bt-pin--bottom:focus-visible .bt-pin__label { transform: translate(-50%, 0); }
+  .bt-pin--right:hover .bt-pin__label, .bt-pin--right:focus-visible .bt-pin__label { transform: translate(0, -50%); }
+  .bt-pin--left:hover .bt-pin__label, .bt-pin--left:focus-visible .bt-pin__label { transform: translate(0, -50%); }
+  .bt-pin:focus-visible { outline: none; }
+  .bt-pin:focus-visible .bt-pin__core { box-shadow: 0 0 0 3px #fff, 0 0 14px 3px rgba(255,255,255,.35); }
+
+  /* ---------- Experience lab ---------- */
+  .lab-section .small { font-size: 12px; color: #888; }
+  .lab-section .lab-panel { margin-top: 8px; }
+  .lab-mobile-summary { display: none; }
+  .lab-tabs {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 28px;
+  }
+  .lab-tabs > button {
+    appearance: none; background: rgba(12,12,12,.55); border: 0;
+    border-right: 1px solid var(--line);
+    color: #9a9a9a; text-align: left;
+    padding: 18px 20px;
+    font: inherit; font-size: 13px; font-weight: 500;
+    display: flex; align-items: center; gap: 12px;
+    transition: color .2s ease, background .2s ease;
+  }
+  .lab-tabs > button:last-child { border-right: 0; }
+  .lab-tabs > button > span:first-child {
+    font-size: 10px; letter-spacing: .12em; color: #666;
+  }
+  .lab-tabs > button .tab-arrow { margin-left: auto; opacity: .45; }
+  .lab-tabs > button[aria-selected="true"] {
+    background: rgba(255,255,255,.06); color: #fff;
+  }
+  .lab-tabs > button[aria-selected="true"] > span:first-child { color: #bbb; }
+  .lab-tabs > button:hover { color: #fff; }
+  .lab-panel {
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    background: rgba(10,10,10,.55);
+    backdrop-filter: blur(8px);
+    padding: clamp(22px, 3vw, 36px);
+  }
+  .navigator-layout, .calculator-layout {
+    display: grid;
+    grid-template-columns: 0.92fr 1.08fr;
+    gap: clamp(24px, 4vw, 48px);
+    align-items: start;
+  }
+  .lab-input h3 {
+    margin: 0 0 14px;
+    font-size: clamp(22px, 2.4vw, 32px);
+    font-weight: 500; letter-spacing: -0.03em; line-height: 1.15;
+  }
+  .lab-input .eyebrow, .result-top .eyebrow, .next-step .eyebrow, .workflow-top .eyebrow {
+    margin: 0 0 14px;
+    font-size: 10px; font-weight: 600; letter-spacing: 1.6px;
+    text-transform: uppercase; color: #8a8a8a;
+  }
+  .lab-input label {
+    display: block; margin: 16px 0 8px;
+    font-size: 11px; letter-spacing: .04em; color: #9a9a9a;
+  }
+  .lab-input select,
+  .lab-input input[type="number"] {
+    width: 100%;
+    background: #0a0a0a; color: #eee;
+    border: 1px solid #333; border-radius: 3px;
+    padding: 12px 14px;
+  }
+  .lab-input input[type="range"] { width: 100%; accent-color: #fff; }
+  .lab-input output { color: #fff; font-weight: 500; }
+  .button.primary, .button.primary.wide {
+    display: inline-flex; align-items: center; justify-content: center; gap: 14px;
+    margin-top: 22px; width: 100%;
+    padding: 14px 18px;
+    font: inherit; font-size: 12px; font-weight: 600;
+    color: #0a0a0a; background: #fff; border: 1px solid #fff; border-radius: 4px;
+    cursor: pointer;
+  }
+  .button.primary:hover { background: transparent; color: #fff; }
+  .button.secondary {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 14px 18px;
+    font: inherit; font-size: 12px; font-weight: 600;
+    color: #fff; background: transparent;
+    border: 1px solid #555; border-radius: 4px; cursor: pointer;
+  }
+  .button.secondary:hover { border-color: #fff; }
+  .subtle-button {
+    appearance: none; background: transparent; border: 0; padding: 0;
+    color: #9a9a9a; font: inherit; font-size: 12px; cursor: pointer;
+  }
+  .subtle-button:hover { color: #fff; }
+  .step-label {
+    display: block; margin-bottom: 12px;
+    font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: #888;
+  }
+  .audit { margin-top: 18px; }
+  .audit .eyebrow { margin-bottom: 8px; }
+  .audit-log, #audit-log {
+    list-style: none; margin: 0; padding: 0;
+  }
+  #audit-log li {
+    padding: 10px 0; border-bottom: 1px solid #1f1f1f;
+    font-size: 12px; color: #9a9a9a;
+  }
+  .variance-row td, .variance-row th { color: #fff; }
+  .result-top { display: flex; justify-content: space-between; gap: 12px; align-items: start; }
+  .result-badge, .demo-badge {
+    font-size: 9px; letter-spacing: .14em; text-transform: uppercase;
+    border: 1px solid #333; padding: 6px 9px; border-radius: 3px; color: #aaa;
+    white-space: nowrap;
+  }
+  .opportunity-result h3 { margin: 18px 0 12px; font-size: 22px; font-weight: 500; letter-spacing: -0.02em; }
+  .result-description { color: #b0b0b0; font-size: 14px; line-height: 1.7; }
+  .result-context { font-size: 12px; color: #888; }
+  .result-metrics {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
+    margin: 22px 0;
+  }
+  .result-metrics > div, .value-metrics > div {
+    border: 1px solid #2a2a2a; border-radius: 3px; padding: 14px;
+    background: rgba(0,0,0,.35);
+  }
+  .result-metrics span, .value-metrics span {
+    display: block; font-size: 9px; letter-spacing: .12em; text-transform: uppercase; color: #777;
+  }
+  .result-metrics strong, .value-metrics strong {
+    display: block; margin-top: 8px; font-size: 18px; font-weight: 500;
+  }
+  .result-metrics small { display: block; margin-top: 6px; color: #888; font-size: 11px; }
+  .next-step {
+    border-top: 1px solid #2a2a2a; padding-top: 18px; margin-top: 8px;
+  }
+  .next-step p:last-child { margin: 0; color: #b0b0b0; font-size: 13px; line-height: 1.7; }
+  .result-note { font-size: 12px; color: #777; }
+  .result-link { display: inline-block; margin-top: 10px; font-size: 12px; color: #ddd; }
+  .result-link:hover { color: #fff; }
+  .input-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 12px 16px;
+  }
+  .input-grid label { margin-top: 0; }
+  .calc-error, .form-error { color: #ccc; font-size: 12px; min-height: 1.2em; }
+  .value-result .eyebrow { margin-bottom: 10px; }
+  .value-currency {
+    font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: #888;
+  }
+  .value-number {
+    font-family: var(--display);
+    font-size: clamp(36px, 5vw, 56px);
+    font-weight: 400; letter-spacing: -0.03em; line-height: 1;
+    margin: 6px 0 8px;
+  }
+  .value-sub { font-size: 12px; color: #888; margin-bottom: 18px; }
+  .value-metrics {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 18px 0;
+  }
+  .capacity-track {
+    height: 6px; background: #1a1a1a; border-radius: 99px; overflow: hidden; margin: 10px 0 18px;
+  }
+  .capacity-track span {
+    display: block; height: 100%; width: 0; background: #fff; border-radius: 99px;
+  }
+  .cyan-dot {
+    display: inline-block; width: 6px; height: 6px; border-radius: 50%;
+    background: #ddd; margin-right: 6px; vertical-align: middle;
+  }
+  .notice {
+    border: 1px solid #2a2a2a; border-radius: 3px; padding: 14px 16px;
+    background: rgba(0,0,0,.35); margin: 14px 0;
+  }
+  .notice strong { display: block; margin-bottom: 6px; font-size: 13px; }
+  .notice p { margin: 0; font-size: 12px; color: #888; line-height: 1.6; }
+  .assumptions {
+    font-size: 12px; color: #888; border-top: 1px solid #2a2a2a; padding-top: 16px;
+  }
+  .assumptions summary {
+    cursor: pointer; color: #ccc; margin-bottom: 10px;
+  }
+  .assumptions p { margin: 0 0 10px; line-height: 1.7; }
+  .lab-footer {
+    display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+    margin-top: 18px; font-size: 11px; color: #777;
+  }
+  .lab-footer a { color: #ccc; }
+  .lab-footer a:hover { color: #fff; }
+  .tiny-dot {
+    display: inline-block; width: 5px; height: 5px; border-radius: 50%;
+    background: #ddd; margin-right: 8px; vertical-align: middle;
+  }
+  .workflow-top {
+    display: flex; justify-content: space-between; gap: 16px; align-items: start;
+    margin-bottom: 10px;
+  }
+  .workflow-top h3 { margin: 0; font-size: clamp(22px, 2.4vw, 32px); font-weight: 500; letter-spacing: -0.03em; }
+  .workflow-disclaimer { margin-bottom: 22px; }
+  .workflow-steps {
+    list-style: none; margin: 0 0 24px; padding: 0;
+    display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px;
+  }
+  .workflow-steps li {
+    font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: #666;
+    border-bottom: 1px solid #2a2a2a; padding-bottom: 10px;
+  }
+  .workflow-steps li span { display: block; margin-top: 6px; color: #888; letter-spacing: 0; text-transform: none; font-size: 12px; }
+  .workflow-steps li.active { color: #fff; border-bottom-color: #fff; }
+  .workflow-steps li.active span { color: #ddd; }
+  .workflow-columns {
+    display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 22px;
+  }
+  .document-heading, .workflow-decision h4 {
+    display: flex; justify-content: space-between; gap: 12px;
+    font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: #888;
+    margin-bottom: 12px;
+  }
+  .table-scroll { overflow: auto; border: 1px solid #2a2a2a; border-radius: 3px; }
+  .table-scroll table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .table-scroll th, .table-scroll td { padding: 10px 12px; border-bottom: 1px solid #222; text-align: left; }
+  .table-scroll th { color: #888; font-weight: 500; }
+  .workflow-decision > p { color: #b0b0b0; font-size: 14px; line-height: 1.7; }
+  .workflow-evidence {
+    border: 1px solid #2a2a2a; border-radius: 3px; padding: 14px;
+    font-size: 12px; color: #9a9a9a; background: rgba(0,0,0,.35);
+  }
+  .workflow-actions {
+    display: flex; flex-wrap: wrap; gap: 14px; align-items: center; margin-top: 18px;
+  }
+  .workflow-actions .button.primary { width: auto; margin-top: 0; }
+  .workflow-decisions { display: flex; gap: 10px; flex-wrap: wrap; }
+  .audit-log {
+    list-style: none; margin: 16px 0 0; padding: 0;
+    border-top: 1px solid #2a2a2a;
+  }
+  .audit-log li {
+    padding: 10px 0; border-bottom: 1px solid #1f1f1f;
+    font-size: 12px; color: #9a9a9a;
+  }
+  .sr-only {
+    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+  }
+
+  @media (max-width: 900px) {
+    .bt-locations__head { grid-template-columns: 1fr; align-items: start; }
+    .bt-locations__meta { align-items: flex-start; text-align: left; }
+    .lab-tabs { grid-template-columns: 1fr; }
+    .lab-tabs > button { border-right: 0; border-bottom: 1px solid var(--line); }
+    .lab-tabs > button:last-child { border-bottom: 0; }
+    .navigator-layout, .calculator-layout, .workflow-columns { grid-template-columns: 1fr; }
+    .workflow-steps { grid-template-columns: repeat(3, 1fr); }
+    .result-metrics { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 640px) {
+    .bt-pin__label { font-size: 11px; padding: 6px 9px; gap: 6px; }
+    .input-grid, .value-metrics { grid-template-columns: 1fr; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .bt-pin__ring { animation: none; opacity: 0; }
+    .bt-pin { transition: none; }
+    html { scroll-snap-type: none; }
+  }
+
+  @media (max-width: 900px) {
+    .arrival {
+      grid-template-columns: 1fr;
+      padding-top: 80px;
+      overflow: auto;
+      align-content: start;
+    }
+    .hero-visual { min-height: 0; max-width: 520px; width: 100%; margin: 0 auto; }
+    .orbit-stage, .orbit { min-height: 320px; }
+    .visual-bottom { font-size: 8px; letter-spacing: 1.2px; gap: 12px; }
+    .expertise-layout { grid-template-columns: 1fr; gap: 36px; align-items: start; }
+    .expertise-copy h2 { max-width: none; }
+    .industries-grid {
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    .about-grid, .contact-grid { grid-template-columns: 1fr; }
+    .section-heading { flex-direction: column; align-items: start; gap: 20px; }
+  }
+
+  @media (max-width: 768px) {
+    :root { --scroll-length: 140vh; }
+    html { scroll-snap-type: none; }
+    .section,
+    .bt-locations,
+    .bt-arch,
+    .about-section,
+    .contact-section,
+    .industries-section {
+      min-height: 0;
+      padding: 72px 0;
+      justify-content: flex-start;
+      scroll-snap-align: none;
+    }
+    .site-header {
+      padding: 12px 5vw;
+      align-items: center;
+    }
+    .logo-link img { height: 44px; }
+    .nav-toggle { display: grid; place-items: center; }
+    .site-nav {
+      position: fixed;
+      inset: 0 0 auto 0;
+      top: 0;
+      padding: 88px 6vw 28px;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0;
+      max-width: none;
+      background: rgba(0,0,0,.94);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid #2a2a2a;
+      transform: translateY(-110%);
+      opacity: 0;
+      pointer-events: none;
+      transition: transform .28s ease, opacity .28s ease;
+    }
+    .site-header.is-nav-open .site-nav {
+      transform: translateY(0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .site-nav a {
+      font-size: 16px;
+      padding: 14px 0;
+      border-bottom: 1px solid #222;
+    }
+    .site-nav .nav-cta {
+      margin-top: 16px;
+      justify-content: center;
+      text-align: center;
+    }
+    .brand { gap: 14px; }
+    .title { font-size: clamp(32px, 11vw, 96px); letter-spacing: 0.06em; }
+    .tagline { font-size: 14px; max-width: 90vw; }
+    .hint { bottom: 28px; }
+    .visual-bottom { flex-wrap: nowrap; overflow: hidden; }
+    .lab-mobile-summary {
+      display: block;
+      margin: 0 0 18px;
+      border: 1px solid #2a2a2a;
+      border-radius: 4px;
+      padding: 12px 14px;
+      background: rgba(12,12,12,.7);
+    }
+    .lab-mobile-summary summary {
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 500;
+      color: #eee;
+    }
+    .lab-mobile-summary .small { margin: 10px 0 0; }
+    .lab-tabs,
+    .lab-panels,
+    .lab-section > .lab-footer {
+      display: none;
+    }
+    .lab-mobile-summary[open] ~ .lab-tabs,
+    .lab-mobile-summary[open] ~ .lab-panels,
+    .lab-mobile-summary[open] ~ .lab-footer {
+      display: grid;
+    }
+    .lab-mobile-summary[open] ~ .lab-panels { display: block; }
+    .lab-mobile-summary[open] ~ .lab-footer {
+      display: flex;
+    }
+    .bt-pin { width: 28px; height: 28px; }
+    .bt-pin__label { font-size: 11px; padding: 6px 8px; }
+    .workflow-steps { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero { height: auto; }
+    .stage { position: relative; min-height: 100vh; }
+    html { scroll-behavior: auto; scroll-snap-type: none; }
+  }
+
+  /* ---------- Chat widget ---------- */
+  .bt-chat {
+    position: fixed;
+    right: max(16px, env(safe-area-inset-right));
+    bottom: max(16px, env(safe-area-inset-bottom));
+    z-index: 50;
+    font-family: 'IBM Plex Sans', Helvetica, Arial, sans-serif;
+  }
+  .bt-chat__fab {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 12px 16px;
+    border: 1px solid #555; border-radius: 4px;
+    background: #fff; color: #0a0a0a;
+    font: inherit; font-size: 12px; font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 10px 40px rgba(0,0,0,.45);
+  }
+  .bt-chat__fab:hover { background: #0a0a0a; color: #fff; border-color: #fff; }
+  .bt-chat__panel {
+    position: absolute;
+    right: 0; bottom: calc(100% + 12px);
+    width: min(360px, calc(100vw - 32px));
+    max-height: min(520px, calc(100vh - 120px));
+    display: flex; flex-direction: column;
+    background: rgba(10,10,10,.96);
+    border: 1px solid #2a2a2a; border-radius: 6px;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    box-shadow: 0 20px 60px rgba(0,0,0,.55);
+    overflow: hidden;
+  }
+  .bt-chat__panel[hidden] { display: none !important; }
+  .bt-chat__head {
+    display: flex; justify-content: space-between; gap: 12px; align-items: start;
+    padding: 16px 16px 12px;
+    border-bottom: 1px solid #222;
+  }
+  .bt-chat__eyebrow {
+    margin: 0 0 4px;
+    font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: #888;
+  }
+  .bt-chat__head h2 {
+    margin: 0;
+    font-size: 18px; font-weight: 500; letter-spacing: -0.02em;
+  }
+  .bt-chat__close {
+    appearance: none; border: 0; background: transparent;
+    color: #aaa; font-size: 16px; cursor: pointer; padding: 4px 6px;
+  }
+  .bt-chat__close:hover { color: #fff; }
+  .bt-chat__messages {
+    flex: 1; overflow: auto;
+    padding: 14px 16px;
+    display: flex; flex-direction: column; gap: 10px;
+    min-height: 180px;
+  }
+  .bt-chat__bubble {
+    max-width: 92%;
+    padding: 10px 12px;
+    border-radius: 4px;
+    font-size: 13px; line-height: 1.55;
+  }
+  .bt-chat__bubble--bot {
+    align-self: flex-start;
+    background: #151515; border: 1px solid #2a2a2a; color: #ddd;
+  }
+  .bt-chat__bubble--user {
+    align-self: flex-end;
+    background: #fff; color: #0a0a0a;
+  }
+  .bt-chat__chips {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    padding: 0 16px 12px;
+  }
+  .bt-chat__chips button {
+    appearance: none; cursor: pointer;
+    border: 1px solid #333; border-radius: 99px;
+    background: transparent; color: #ccc;
+    font: inherit; font-size: 11px;
+    padding: 7px 11px;
+  }
+  .bt-chat__chips button:hover { border-color: #fff; color: #fff; }
+  .bt-chat__form {
+    display: flex; gap: 8px;
+    padding: 0 16px 12px;
+    border-top: 1px solid #222;
+    padding-top: 12px;
+  }
+  .bt-chat__form input {
+    flex: 1;
+    background: #0a0a0a; color: #eee;
+    border: 1px solid #333; border-radius: 3px;
+    padding: 10px 12px; font: inherit; font-size: 13px;
+  }
+  .bt-chat__form button {
+    appearance: none; cursor: pointer;
+    border: 1px solid #fff; border-radius: 3px;
+    background: #fff; color: #0a0a0a;
+    font: inherit; font-size: 12px; font-weight: 600;
+    padding: 0 14px;
+  }
+  .bt-chat__handoff {
+    display: block;
+    margin: 0 16px 16px;
+    text-align: center;
+    font-size: 12px; font-weight: 500; color: #ddd;
+    border-top: 1px solid #222; padding-top: 12px;
+  }
+  .bt-chat__handoff:hover { color: #fff; }
+  @media (max-width: 640px) {
+    .bt-chat__fab span { display: none; }
+    .bt-chat__fab { padding: 14px; border-radius: 4px; }
+  }
+</style>
+</head>
+<body>
+
+<canvas class="space-canvas" id="warp" aria-hidden="true"></canvas>
+<div class="jump-veil" id="jump-veil" aria-hidden="true"></div>
+
+<div class="site-shell">
+<header class="site-header" role="banner">
+  <a class="logo-link" href="#" aria-label="Beyond Tech home">
+    <img src="assets/logo-stacked.png" alt="Beyond Tech" width="1024" height="954" decoding="async">
+  </a>
+  <nav class="site-nav" id="site-nav" aria-label="Primary">
+    <a href="#expertise">Expertise</a>
+    <a href="#experience">AI in action</a>
+    <a href="#locations">Markets</a>
+    <a href="#architecture">About</a>
+    <a class="nav-cta" href="#contact">Let’s talk <span>↗</span></a>
+  </nav>
+  <button type="button" class="nav-toggle" id="nav-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="Open menu">
+    <span></span><span></span>
+  </button>
+</header>
+
+<section class="hero" aria-label="Intro">
+  <div class="stage" id="stage">
+    <div class="vignette" aria-hidden="true"></div>
+
+    <div class="brand" id="brand">
+      <h1 class="title" id="title" aria-label="Beyond Tech"></h1>
+      <p class="tagline" id="tagline">Accelerate Your Business at Lightspeed With AI.</p>
+    </div>
+
+    <div class="arrival" id="arrival">
+      <div class="arrival-copy">
+        <p class="eyebrow"><span class="signal" aria-hidden="true"></span> Enterprise intelligence. Real-world impact.</p>
+        <h2>Beyond AI hype.<br>Into <span class="gradient-text">business impact.</span></h2>
+        <p class="lead">We help enterprises turn AI ambition into measurable business outcomes. From strategy and governance to intelligent workflows and managed AI operations.</p>
+        <div class="arrival-actions">
+          <a class="cta-primary" href="#contact">Book a strategy session <span>↗</span></a>
+          <a class="cta-secondary" href="#experience">Explore AI in action <span>→</span></a>
+        </div>
+        <div class="arrival-note">
+          <span class="short-line" aria-hidden="true"></span>
+          Business-led. Human-governed. Built for the enterprise.
+        </div>
+      </div>
+
+      <div class="hero-visual" id="intelligence-visual" aria-label="Enterprise intelligence diagram connecting strategy, workflows, governance and business value">
+        <div class="visual-top"><span>The intelligence layer</span><span class="mono">BT / 02</span></div>
+        <div class="orbit-stage">
+          <svg class="orbit" id="orbit-svg" viewBox="0 0 550 520" aria-hidden="true">
+            <defs>
+              <linearGradient id="orbit-color" x1="0" y1="0" x2="1" y2="1">
+                <stop stop-color="#888"/>
+                <stop offset="1" stop-color="#f2f2f2"/>
+              </linearGradient>
+              <radialGradient id="core" cx="50%" cy="50%" r="50%">
+                <stop stop-color="#2a2a2a" stop-opacity=".55"/>
+                <stop offset="1" stop-color="#000" stop-opacity="0"/>
+              </radialGradient>
+            </defs>
+            <circle cx="275" cy="252" r="225" fill="url(#core)"/>
+            <g fill="none" stroke="#3a3a3a" stroke-width="1" opacity=".9">
+              <circle cx="275" cy="252" r="149" stroke-dasharray="2 9"/>
+              <circle cx="275" cy="252" r="210" stroke-dasharray="1 10"/>
+            </g>
+            <g id="orbit-a" fill="none" stroke="url(#orbit-color)" stroke-width="1.5" opacity=".85">
+              <ellipse cx="275" cy="252" rx="219" ry="89" transform="rotate(-32 275 252)"/>
+              <circle id="node-1" r="5" fill="#eee"/>
+            </g>
+            <g id="orbit-b" fill="none" stroke="#666" stroke-width="1.25" opacity=".8">
+              <ellipse cx="275" cy="252" rx="219" ry="89" transform="rotate(32 275 252)"/>
+              <circle id="node-2" r="4" fill="#ddd"/>
+            </g>
+            <g id="orbit-c" fill="none" stroke="#555" stroke-width="1.25" opacity=".75">
+              <ellipse cx="275" cy="252" rx="80" ry="212" transform="rotate(25 275 252)"/>
+              <circle id="node-3" r="4.5" fill="#eee"/>
+            </g>
+            <g id="cube" fill="none" stroke="url(#orbit-color)" stroke-width="1.6" stroke-linejoin="round"></g>
+            <text x="275" y="392" text-anchor="middle" fill="#a8a8a8" font-size="10" letter-spacing="3" font-family="IBM Plex Sans, Helvetica, Arial, sans-serif">BUSINESS VALUE</text>
+          </svg>
+          <div class="orbit-label" id="label-strategy">Strategy</div>
+          <div class="orbit-label" id="label-agents">Agentic workflows</div>
+          <div class="orbit-label" id="label-governance">Governance</div>
+        </div>
+        <div class="visual-bottom" aria-hidden="true">
+          <span class="step">Ambition</span>
+          <span class="visual-line"></span>
+          <span class="step">Execution</span>
+          <span class="visual-line"></span>
+          <span class="step">Outcomes</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="hint" id="hint">
+      <span>Scroll</span>
+      <svg width="18" height="28" viewBox="0 0 18 28" fill="none" aria-hidden="true">
+        <rect x="1" y="1" width="16" height="26" rx="8" stroke="#9a9a9a" stroke-width="1.5"/>
+        <line x1="9" y1="7" x2="9" y2="12" stroke="#9a9a9a" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div class="flash" id="flash" aria-hidden="true"></div>
+  </div>
+</section>
+
+<div class="content">
+
+  <section id="expertise" class="section wrap">
+    <div class="expertise-layout">
+      <div class="expertise-copy">
+        <p class="section-eyebrow">01 / What we help you solve</p>
+        <h2>
+          <span class="swipe-line">AI is a capability.</span>
+          <span class="swipe-line muted-heading">Business impact is the objective.</span>
+        </h2>
+      </div>
+      <div class="service-grid">
+        <article class="service-card">
+          <span class="card-index">01</span>
+          <h3>Enterprise AI<br>Strategy &amp; Advisory</h3>
+          <p>Move from ambition to a prioritized, investable AI roadmap.</p>
+          <span class="card-tags">Value cases · Operating models</span>
+        </article>
+        <article class="service-card">
+          <span class="card-index">02</span>
+          <h3>Agentic AI &amp;<br>Intelligent Automation</h3>
+          <p>Connect AI to real workflows, with people in control.</p>
+          <span class="card-tags">Workflow design · Orchestration</span>
+        </article>
+        <article class="service-card">
+          <span class="card-index">03</span>
+          <h3>AI Governance &amp;<br>Enterprise Readiness</h3>
+          <p>Establish the controls and foundations to adopt AI responsibly.</p>
+          <span class="card-tags">Risk · Data · Accountability</span>
+        </article>
+        <article class="service-card">
+          <span class="card-index">04</span>
+          <h3>Enterprise Transformation<br>&amp; Technology Advisory</h3>
+          <p>Bring business architecture, ERP and delivery into alignment.</p>
+          <span class="card-tags">SAP / ERP · M&amp;A · Transformation</span>
+        </article>
+      </div>
+    </div>
+  </section>
+
+
+<section id="experience" class="section wrap lab-section">
+  <div class="section-heading">
+    <div>
+      <p class="section-eyebrow"><span class="signal" aria-hidden="true"></span> 02 / AI in action</p>
+      <h2>Less speculation.<br><span class="gradient-text">More hands-on understanding.</span></h2>
+    </div>
+    <p class="section-intro">Explore an opportunity. Test the economics. Step inside a governed workflow.<br><span class="small">Illustrative tools. No client data.</span></p>
+  </div>
+  <details class="lab-mobile-summary">
+    <summary>Open interactive tools</summary>
+    <p class="small">Opportunity navigator, value calculator, and a synthetic workflow demo — illustrative only.</p>
+  </details>
+  <div class="lab-tabs" role="tablist" aria-label="Interactive AI solutions">
+    <button type="button" role="tab" aria-selected="true" aria-controls="navigator-panel" id="navigator-tab" data-tab="navigator"><span>01</span> Opportunity <span class="tab-arrow">↗</span></button>
+    <button type="button" role="tab" aria-selected="false" aria-controls="calculator-panel" id="calculator-tab" data-tab="calculator" tabindex="-1"><span>02</span> Value <span class="tab-arrow">↗</span></button>
+    <button type="button" role="tab" aria-selected="false" aria-controls="workflow-panel" id="workflow-tab" data-tab="workflow" tabindex="-1"><span>03</span> Workflow <span class="tab-arrow">↗</span></button>
+  </div>
+  <div class="lab-panels">
+    <div id="navigator-panel" class="lab-panel navigator-layout" role="tabpanel" aria-labelledby="navigator-tab">
+<div class="lab-input">
+<p class="eyebrow">FIND YOUR STARTING POINT</p>
+<h3>Where could AI<br>create value for you?</h3>
+<p class="small">Set your business context to explore a potential use case.</p>
+<label for="industry">Your industry</label>
+<select id="industry">
+<option value="manufacturing">Manufacturing & industrial</option>
+<option value="financial">Financial services</option>
+<option value="logistics">Logistics & distribution</option>
+<option value="professional">Professional services</option>
+</select>
+<label for="function">Business function</label>
+<select id="function">
+<option value="finance">Finance & accounts payable</option>
+<option value="procurement">Procurement</option>
+<option value="operations">Operations & service delivery</option>
+</select>
+<label for="challenge">Operational challenge</label>
+<select id="challenge">
+<option value="manual">Manual processing & rework</option>
+<option value="visibility">Limited visibility & slow decisions</option>
+<option value="control">Inconsistent controls & evidence</option>
+</select>
+<button id="find-opportunity" class="button primary wide">Explore opportunity <span>→</span>
+</button>
+</div>
+<div class="opportunity-result" id="opportunity-result" aria-live="polite">
+</div>
+</div>
+    <div id="calculator-panel" class="lab-panel calculator-layout" role="tabpanel" aria-labelledby="calculator-tab" hidden>
+<div class="lab-input">
+<p class="eyebrow">MODEL THE OPPORTUNITY</p>
+<h3>Make the assumptions visible.</h3>
+<div class="input-grid">
+<div>
+<label for="volume">Transactions / month</label>
+<input id="volume" type="number" min="0" max="10000000" step="1" value="5000">
+</div>
+<div>
+<label for="minutes">Minutes / transaction</label>
+<input id="minutes" type="number" min="0" max="10000" step="0.1" value="12">
+</div>
+<div>
+<label for="rate">Loaded labor cost / hour</label>
+<input id="rate" type="number" min="0" max="100000" step="0.01" value="550">
+</div>
+<div>
+<label for="currency">Currency</label>
+<select id="currency">
+<option>SEK</option>
+<option>EUR</option>
+<option>AED</option>
+<option>SAR</option>
+</select>
+</div>
+</div>
+<label for="suitability">Automation suitability <output id="suitability-label">60%</output>
+</label>
+<input id="suitability" type="range" min="0" max="100" value="60">
+<label for="saving">Time saved on suitable transactions <output id="saving-label">50%</output>
+</label>
+<input id="saving" type="range" min="0" max="100" value="50">
+<p id="calc-error" class="form-error" role="status">
+</p>
+<p class="small">Currency changes the label only. Enter the labor cost in your chosen currency; no exchange rate is applied.</p>
+<button class="subtle-button" id="reset-calculator">Reset assumptions ↺</button>
+</div>
+<div class="value-result" aria-live="polite">
+<p class="eyebrow">INDICATIVE ANNUAL CAPACITY VALUE</p>
+<div class="value-currency" id="value-currency">SEK</div>
+<div class="value-number" id="capacity-value">1,980,000</div>
+<div class="value-sub">potential labor capacity value / year</div>
+<div class="value-metrics">
+<div>
+<strong id="capacity-hours">3,600</strong>
+<span>hours of capacity / year</span>
+</div>
+<div>
+<strong id="baseline-hours">12,000</strong>
+<span>baseline hours / year</span>
+</div>
+</div>
+<div class="capacity-track" role="img" id="capacity-track" aria-label="30 percent of baseline time potentially released">
+<span id="capacity-bar" style="width:30%">
+</span>
+</div>
+<p class="small">
+<span class="cyan-dot">
+</span> <span id="capacity-percent">30%</span> of baseline processing time potentially released</p>
+<div class="notice">
+<strong>Capacity is not cash savings.</strong>
+<p>Financial benefits depend on redeployment, actual cost reductions, adoption and delivery costs. This is not an ROI or savings forecast.</p>
+</div>
+<details class="assumptions">
+<summary>See the calculation & exclusions</summary>
+<p>Annual hours = monthly volume × 12 × minutes ÷ 60.<br>Capacity hours = annual hours × suitability × time saved.<br>Capacity value = capacity hours × loaded hourly cost.</p>
+<p>Assumes stable volumes and full adoption for suitable transactions. Excludes implementation, licensing, model usage, oversight, maintenance, ramp-up and error costs. No headcount reduction is assumed.</p>
+</details>
+</div>
+</div>
+    <div id="workflow-panel" class="lab-panel workflow-layout" role="tabpanel" aria-labelledby="workflow-tab" hidden>
+<div class="workflow-top">
+<div>
+<p class="eyebrow">AI-ASSISTED INVOICE EXCEPTION</p>
+<h3>Intelligence acts. People decide.</h3>
+</div>
+<span class="demo-badge">SYNTHETIC DEMONSTRATION</span>
+</div>
+<p class="small workflow-disclaimer">A scripted, browser-only simulation. No live AI, ERP connection, payment or completed client implementation.</p>
+<ol class="workflow-steps" id="workflow-steps">
+<li class="active">01 <span>Compare</span>
+</li>
+<li>02 <span>Detect</span>
+</li>
+<li>03 <span>Categorize</span>
+</li>
+<li>04 <span>Recommend</span>
+</li>
+<li>05 <span>Human review</span>
+</li>
+<li>06 <span>Audit</span>
+</li>
+</ol>
+<div class="workflow-columns">
+<div>
+<div class="document-heading">
+<span>DOCUMENT COMPARISON</span>
+<span>INV-DEMO-1042</span>
+</div>
+<div class="table-scroll">
+<table>
+<caption class="sr-only">Synthetic invoice compared with a purchase order</caption>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Invoice</th>
+<th scope="col">Purchase order</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th scope="row">Supplier</th>
+<td>Demo Components AB</td>
+<td>Demo Components AB</td>
+</tr>
+<tr>
+<th scope="row">Quantity</th>
+<td>100 units</td>
+<td>100 units</td>
+</tr>
+<tr class="variance-row">
+<th scope="row">Unit price</th>
+<td>SEK 120</td>
+<td>SEK 100</td>
+</tr>
+<tr class="variance-row">
+<th scope="row">Net total</th>
+<td>SEK 12,000</td>
+<td>SEK 10,000</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="audit">
+<p class="eyebrow">SESSION AUDIT TRAIL</p>
+<ol id="audit-log">
+</ol>
+</div>
+</div>
+<div class="workflow-decision" aria-live="polite">
+<span class="step-label" id="workflow-step-label">STEP 01 / 06</span>
+<h4 id="workflow-title">
+</h4>
+<p id="workflow-description">
+</p>
+<div id="workflow-evidence" class="workflow-evidence">
+</div>
+<div class="workflow-actions">
+<button id="workflow-next" class="button primary">Compare documents <span>→</span>
+</button>
+<div id="workflow-decisions" class="workflow-decisions" hidden>
+<button id="workflow-approve" class="button primary">Approve recommendation ✓</button>
+<button id="workflow-reject" class="button secondary">Reject & escalate</button>
+</div>
+<button id="workflow-reset" class="subtle-button">Reset demonstration ↺</button>
+</div>
+</div>
+</div>
+</div>
+  </div>
+  <div class="lab-footer">
+    <span><span class="tiny-dot"></span> Your inputs stay in this browser. Nothing is submitted.</span>
+    <a href="#contact">Discuss your enterprise context →</a>
+  </div>
+</section>
+
+
+<section id="locations" class="bt-locations" aria-labelledby="bt-locations-title">
+    <div class="wrap">
+      <div class="bt-locations__head">
+        <div>
+          <h2 class="bt-locations__title" id="bt-locations-title">Swedish roots.<br><em>International ambition.</em></h2>
+        </div>
+        <div class="bt-locations__meta" aria-label="Markets">
+          <span>Sweden <b>01</b></span>
+          <span>United Arab Emirates <b>02</b></span>
+          <span>Saudi Arabia <b>03</b></span>
+          <div class="bt-locations__note">Where we operate</div>
+        </div>
+      </div>
+      <div class="bt-map" id="bt-map" role="img" aria-label="World map highlighting Beyond Tech in Sweden, the United Arab Emirates and Saudi Arabia">
+        <canvas aria-hidden="true"></canvas>
+      </div>
+    </div>
+  </section>
+
+<section id="industries" class="section wrap industries-section">
+    <div class="section-heading">
+      <div>
+        <p class="section-eyebrow">05 / Enterprise context matters</p>
+        <h2>Different industries.<br><span class="muted-heading">Specific decisions.</span></h2>
+      </div>
+      <p class="section-intro">Explore starting points across complex operating environments. Each opportunity needs its own business case and control design.</p>
+    </div>
+    <div class="industries-grid">
+      <article class="service-card" data-industry="manufacturing" role="button" tabindex="0">
+        <canvas class="bt-pixel-art" data-motif="manufacturing" role="img" aria-label="Animated pixel illustration of turning gears beside a factory"></canvas>
+        <div class="industry-copy">
+          <span class="card-index">01</span>
+          <h3>Manufacturing &amp; industrial</h3>
+          <p>Operations, quality and supply decisions under real constraints.</p>
+        </div>
+      </article>
+      <article class="service-card" data-industry="financial" role="button" tabindex="0">
+        <canvas class="bt-pixel-art" data-motif="financial" role="img" aria-label="Animated pixel illustration of a rising bar chart and trend line"></canvas>
+        <div class="industry-copy">
+          <span class="card-index">02</span>
+          <h3>Financial services</h3>
+          <p>Controls, evidence and speed where risk is non-negotiable.</p>
+        </div>
+      </article>
+      <article class="service-card" data-industry="logistics" role="button" tabindex="0">
+        <canvas class="bt-pixel-art" data-motif="logistics" role="img" aria-label="Animated pixel illustration of a shipping route flowing into stacked containers"></canvas>
+        <div class="industry-copy">
+          <span class="card-index">03</span>
+          <h3>Logistics &amp; distribution</h3>
+          <p>Visibility and exception handling across moving networks.</p>
+        </div>
+      </article>
+      <article class="service-card" data-industry="professional" role="button" tabindex="0">
+        <canvas class="bt-pixel-art" data-motif="professional" role="img" aria-label="Animated pixel illustration of a connected network of people"></canvas>
+        <div class="industry-copy">
+          <span class="card-index">04</span>
+          <h3>Professional services</h3>
+          <p>Delivery leverage without losing judgment or accountability.</p>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section class="bt-arch" id="architecture" aria-labelledby="bt-arch-title">
+    <div class="bt-arch__inner">
+      <div class="bt-arch__head">
+        <p class="section-eyebrow">06 / The perspective behind Beyond Tech</p>
+        <h2 id="bt-arch-title">Enterprise experience.<br><span class="muted-heading">An AI-forward mindset.</span></h2>
+      </div>
+      <ul class="bt-modes" role="list" aria-label="Show an example flow">
+        <li><button class="bt-mode" type="button" data-mode="all" aria-pressed="true">All flows</button></li>
+        <li><button class="bt-mode" type="button" data-mode="finance" aria-pressed="false">Finance close</button></li>
+        <li><button class="bt-mode" type="button" data-mode="procurement" aria-pressed="false">Procurement</button></li>
+        <li><button class="bt-mode" type="button" data-mode="service" aria-pressed="false">Customer service</button></li>
+        <li><button class="bt-mode" type="button" data-mode="workforce" aria-pressed="false">Workforce</button></li>
+      </ul>
+
+      <div class="bt-stage">
+        <svg id="bt-arch-svg" viewBox="0 0 1280 640" role="img" aria-labelledby="bt-arch-svg-t bt-arch-svg-d">
+          <title id="bt-arch-svg-t">How Beyond Tech works</title>
+          <desc id="bt-arch-svg-d">Data from existing enterprise systems such as SAP S/4HANA, Microsoft Dynamics, Salesforce, Workday, ServiceNow and the data platform flows into the Beyond Tech agent layer. Connectors pass it to AI agents that plan, act and check, then to human approval, all within a governance boundary, producing measurable outcomes: hours saved, lower cost, faster decisions and controlled risk.</desc>
+          <defs>
+            <pattern id="dots" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r="1" fill="#141414"/></pattern>
+            <linearGradient id="coreFill" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#121212"/><stop offset="1" stop-color="#050505"/>
+            </linearGradient>
+            <linearGradient id="scanGrad" gradientUnits="userSpaceOnUse" x1="440" y1="0" x2="840" y2="0">
+              <stop offset="0" stop-color="#ffffff" stop-opacity="0"/>
+              <stop offset="0.5" stop-color="#ffffff" stop-opacity="0.85"/>
+              <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+            </linearGradient>
+            <linearGradient id="meterGrad" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0" stop-color="#555"/><stop offset="1" stop-color="#fff"/>
+            </linearGradient>
+            <radialGradient id="pGlow">
+              <stop offset="0" stop-color="#ffffff"/>
+              <stop offset=".35" stop-color="#d0d0d0" stop-opacity=".9"/>
+              <stop offset="1" stop-color="#888" stop-opacity="0"/>
+            </radialGradient>
+            <filter id="soft" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="6"/></filter>
+            <clipPath id="coreClip"><rect x="440" y="44" width="400" height="532" rx="22"/></clipPath>
+          </defs>
+
+          <rect width="1280" height="640" fill="url(#dots)"/>
+
+          <text class="mono arch-col-label" x="40" y="34" fill="#ffffff" font-weight="700">Systems you already run</text>
+          <text class="mono arch-col-label" x="1000" y="34" fill="#ffffff" font-weight="700">Measurable value</text>
+
+          <g id="wires-in">
+            <path class="wire" id="w-in-0" d="M262 88 C 360 88, 380 175, 480 175"/>
+            <path class="wire" id="w-in-1" d="M262 172 C 360 172, 380 175, 480 175"/>
+            <path class="wire" id="w-in-2" d="M262 256 C 360 256, 380 175, 480 175"/>
+            <path class="wire" id="w-in-3" d="M262 340 C 360 340, 380 175, 480 175"/>
+            <path class="wire" id="w-in-4" d="M262 424 C 360 424, 380 175, 480 175"/>
+            <path class="wire" id="w-in-5" d="M262 508 C 360 508, 380 175, 480 175"/>
+          </g>
+          <g id="wires-out">
+            <path class="wire" id="w-out-0" d="M800 455 C 900 455, 900 108, 998 108"/>
+            <path class="wire" id="w-out-1" d="M800 455 C 900 455, 900 238, 998 238"/>
+            <path class="wire" id="w-out-2" d="M800 455 C 900 455, 900 368, 998 368"/>
+            <path class="wire" id="w-out-3" d="M800 455 C 900 455, 900 498, 998 498"/>
+          </g>
+
+          <rect class="gov" x="420" y="24" width="440" height="572" rx="32"/>
+          <rect x="560" y="584" width="160" height="24" fill="#000"/>
+          <text class="mono-a" x="640" y="600" text-anchor="middle" fill="#f0f0f0">GOVERNANCE BY DESIGN</text>
+
+          <rect class="core-frame" x="440" y="44" width="400" height="532" rx="22"/>
+          <g clip-path="url(#coreClip)">
+            <rect id="scanline" x="440" y="44" width="400" height="2" fill="url(#scanGrad)" opacity=".35"/>
+          </g>
+          <text class="mono-a" x="640" y="84" text-anchor="middle" fill="#f0f0f0">AGENT LAYER</text>
+          <text class="lbl" x="640" y="112" text-anchor="middle" fill="#f2f2f2">Beyond Tech</text>
+
+          <path class="wire hot" id="w-core" d="M640 210 L640 240 L560 300 L640 300 L720 300 L640 360 L640 420"/>
+          <g id="particles"></g>
+
+          <g class="mod" id="m-conn">
+            <rect x="480" y="140" width="320" height="70" rx="10"/>
+            <text class="lbl" x="640" y="172" text-anchor="middle" fill="#f2f2f2">Connectors</text>
+            <text class="sub" x="640" y="194" text-anchor="middle" fill="#b0b0b0">APIs, events, secure data access</text>
+          </g>
+
+          <g class="mod" id="m-agents">
+            <rect x="480" y="236" width="320" height="140" rx="10"/>
+            <text class="lbl" x="640" y="266" text-anchor="middle" fill="#f2f2f2">AI agents</text>
+            <circle class="agent-node" id="a-0" cx="560" cy="300" r="13"/>
+            <circle class="agent-node" id="a-1" cx="640" cy="300" r="13"/>
+            <circle class="agent-node" id="a-2" cx="720" cy="300" r="13"/>
+            <text class="mono" x="560" y="340" text-anchor="middle" fill="#b8b8b8">Plan</text>
+            <text class="mono" x="640" y="340" text-anchor="middle" fill="#b8b8b8">Act</text>
+            <text class="mono" x="720" y="340" text-anchor="middle" fill="#b8b8b8">Check</text>
+          </g>
+
+          <g class="mod" id="m-approve">
+            <rect x="480" y="420" width="320" height="70" rx="10"/>
+            <text class="lbl" x="640" y="452" text-anchor="middle" fill="#f2f2f2">Human approval</text>
+            <text class="sub" x="640" y="474" text-anchor="middle" fill="#b0b0b0">People stay in control of key decisions</text>
+          </g>
+
+          <g class="mod" id="m-audit">
+            <rect x="480" y="510" width="320" height="44" rx="10"/>
+            <text class="mono" x="640" y="537" text-anchor="middle" fill="#b8b8b8">Audit · Policy · Access</text>
+          </g>
+
+          <g id="systems"></g>
+          <g id="outcomes"></g>
+        </svg>
+      </div>
+      <p class="bt-caption" id="bt-caption" aria-live="polite"><b>All flows</b><span>Data moves from the systems you already run, through governed AI agents, to results you can measure.</span></p>
+    </div>
+  </section>
+
+  <section id="contact" class="contact-section">
+    <div class="wrap contact-grid">
+      <div>
+        <p class="section-eyebrow"><span class="signal" aria-hidden="true"></span> Your next move</p>
+        <h2>Turn ambition<br>into <span class="gradient-text">a clear way forward.</span></h2>
+        <p>Let’s discuss your priorities, the opportunity for AI and what a credible first step could look like.</p>
+        <a class="contact-email" href="mailto:hej@beyondtech.se">hej@beyondtech.se ↗</a>
+        <span class="contact-location">Based in Sweden. Focused on Sweden, UAE &amp; Saudi Arabia.</span>
+      </div>
+      <form class="contact-form" id="strategy-form" novalidate>
+        <h3 class="contact-form__title" id="strategy-form-title">Book a strategy session</h3>
+        <p class="contact-form__hint">Tell us a little about you and your company. We’ll follow up to schedule a session.</p>
+        <div class="contact-form__fields">
+          <div class="contact-form__row">
+            <div class="contact-field">
+              <label for="contact-name">Name</label>
+              <input id="contact-name" name="name" type="text" autocomplete="name" placeholder="Your name" required>
+            </div>
+            <div class="contact-field">
+              <label for="contact-email">Work email</label>
+              <input id="contact-email" name="email" type="email" autocomplete="email" placeholder="you@company.com" required>
+            </div>
+          </div>
+          <div class="contact-form__row">
+            <div class="contact-field">
+              <label for="contact-company">Company</label>
+              <input id="contact-company" name="company" type="text" autocomplete="organization" placeholder="Company name" required>
+            </div>
+            <div class="contact-field">
+              <label for="contact-role">Role</label>
+              <input id="contact-role" name="role" type="text" autocomplete="organization-title" placeholder="e.g. Head of Digital">
+            </div>
+          </div>
+          <div class="contact-field">
+            <label for="contact-message">What should we discuss?</label>
+            <textarea id="contact-message" name="message" rows="4" placeholder="Priorities, timelines, or the outcome you’re aiming for…"></textarea>
+          </div>
+        </div>
+        <div class="contact-form__actions">
+          <button type="submit" class="cta-primary">Send <span>→</span></button>
+          <p class="contact-form__note">No spam — just a reply to book the session.</p>
+        </div>
+        <div class="contact-form__thanks" role="status" aria-live="polite">
+          <p><strong>Thanks — we got your details.</strong>We’ll be in touch shortly to book your strategy session.</p>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <span>© 2026 Beyond Tech AB</span>
+      <span>Beyond AI hype. Into business impact.</span>
+    </div>
+  </footer>
+</div>
+
+<div class="bt-chat" id="bt-chat">
+  <button type="button" class="bt-chat__fab" id="bt-chat-fab" aria-expanded="false" aria-controls="bt-chat-panel">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M5 6.5h14v8.5H9.2L5 18.5V6.5z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+    </svg>
+    <span>Ask</span>
+  </button>
+  <div class="bt-chat__panel" id="bt-chat-panel" role="dialog" aria-labelledby="bt-chat-title" hidden>
+    <div class="bt-chat__head">
+      <div>
+        <p class="bt-chat__eyebrow">Beyond Tech</p>
+        <h2 id="bt-chat-title">Ask a question</h2>
+      </div>
+      <button type="button" class="bt-chat__close" id="bt-chat-close" aria-label="Close chat">✕</button>
+    </div>
+    <div class="bt-chat__messages" id="bt-chat-messages" aria-live="polite"></div>
+    <div class="bt-chat__chips" id="bt-chat-chips"></div>
+    <form class="bt-chat__form" id="bt-chat-form">
+      <label class="sr-only" for="bt-chat-input">Your message</label>
+      <input id="bt-chat-input" type="text" autocomplete="off" placeholder="Ask about strategy, markets, or next steps…">
+      <button type="submit">Send</button>
+    </form>
+    <a class="bt-chat__handoff" href="#contact">Book a strategy session ↗</a>
+  </div>
+</div>
+</div>
+
+<script>
+(() => {
+  const WORD = 'BEYOND TECH';
+  const STAR_DESKTOP = 1100;
+  const STAR_MOBILE = 320;
+
+  const stage = document.getElementById('stage');
+  const hero = stage.parentElement;
+  const canvas = document.getElementById('warp');
+  const brand = document.getElementById('brand');
+  const titleEl = document.getElementById('title');
+  const tagline = document.getElementById('tagline');
+  const arrival = document.getElementById('arrival');
+  const hint = document.getElementById('hint');
+  const flash = document.getElementById('flash');
+  const jumpVeil = document.getElementById('jump-veil');
+  const cubeEl = document.getElementById('cube');
+  const node1 = document.getElementById('node-1');
+  const node2 = document.getElementById('node-2');
+  const node3 = document.getElementById('node-3');
+  const orbitStage = document.querySelector('.orbit-stage');
+  // Fixed ellipse paths — one per node (matches SVG)
+  const ORBITS = [
+    { rx: 219, ry: 89, rot: -32, phase: 0.4, speed: 1.05 },   // node-1 Strategy
+    { rx: 219, ry: 89, rot: 32,  phase: 2.3, speed: 0.82 },   // node-2 Agentic
+    { rx: 80,  ry: 212, rot: 25, phase: 4.1, speed: 1.18 },  // node-3 Governance
+  ];
+  const labelStrategy = document.getElementById('label-strategy');
+  const labelAgents = document.getElementById('label-agents');
+  const labelGovernance = document.getElementById('label-governance');
+  const ctx = canvas.getContext('2d');
+  const reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const compactMq = window.matchMedia('(max-width: 768px)');
+
+  // Mobile nav
+  const headerEl = document.querySelector('.site-header');
+  const navToggle = document.getElementById('nav-toggle');
+  const siteNav = document.getElementById('site-nav');
+  function setNavOpen(open) {
+    if (!headerEl || !navToggle) return;
+    headerEl.classList.toggle('is-nav-open', open);
+    navToggle.setAttribute('aria-expanded', String(open));
+    navToggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+  }
+  if (navToggle) {
+    navToggle.addEventListener('click', () => setNavOpen(!headerEl.classList.contains('is-nav-open')));
+  }
+  if (siteNav) {
+    siteNav.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => setNavOpen(false)));
+  }
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') setNavOpen(false);
+  });
+
+  const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+  const range = (p, a, b) => clamp((p - a) / (b - a));
+  const smooth = t => t * t * (3 - 2 * t);
+
+  const letters = WORD.split('').map(ch => {
+    const s = document.createElement('span');
+    s.setAttribute('aria-hidden', 'true');
+    s.textContent = ch === ' ' ? '\u00a0\u00a0' : ch;
+    titleEl.appendChild(s);
+    return s;
+  });
+
+  // Scale Rostex as large as possible while still fitting the screen
+  function fitTitle() {
+    titleEl.style.fontSize = '';
+    const maxW = Math.min(window.innerWidth * 0.98, 1600);
+    const natural = titleEl.scrollWidth || titleEl.getBoundingClientRect().width;
+    if (natural <= 1) return;
+    const current = parseFloat(getComputedStyle(titleEl).fontSize) || 96;
+    const next = Math.max(36, Math.min(180, current * (maxW / natural) * 0.99));
+    titleEl.style.fontSize = `${next.toFixed(1)}px`;
+  }
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(fitTitle).catch(fitTitle);
+  } else {
+    requestAnimationFrame(fitTitle);
+  }
+
+  if (reduce) {
+    arrival.style.position = 'relative';
+    arrival.style.minHeight = '100vh';
+    arrival.style.opacity = 1;
+    arrival.style.visibility = 'visible';
+    arrival.style.transform = '';
+    arrival.style.filter = 'none';
+    arrival.style.clipPath = 'none';
+    arrival.style.webkitClipPath = 'none';
+    arrival.classList.add('is-active');
+    brand.style.display = 'none';
+    hint.style.display = 'none';
+  }
+
+  function hexToRgb(h) {
+    const m = /^#?([0-9a-f]{6})$/i.exec((h || '').trim());
+    if (!m) return [232, 232, 232];
+    const n = parseInt(m[1], 16);
+    return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+  }
+  const accent = hexToRgb(getComputedStyle(document.documentElement).getPropertyValue('--streak'));
+
+  function makeStar(fresh) {
+    let x, y;
+    do { x = Math.random() * 2 - 1; y = Math.random() * 2 - 1; } while (x * x + y * y < 0.004);
+    return { x, y, z: fresh ? Math.random() : 1, tone: Math.random() };
+  }
+
+  let isCompact = compactMq.matches;
+  let starTarget = isCompact ? STAR_MOBILE : STAR_DESKTOP;
+  const stars = Array.from({ length: STAR_DESKTOP }, () => makeStar(true));
+
+  function syncDevice() {
+    isCompact = compactMq.matches;
+    starTarget = isCompact ? STAR_MOBILE : STAR_DESKTOP;
+    document.documentElement.style.setProperty(
+      '--scroll-length',
+      isCompact ? '140vh' : '180vh'
+    );
+    while (stars.length < starTarget) stars.push(makeStar(true));
+    if (stars.length > starTarget) stars.length = starTarget;
+  }
+  syncDevice();
+  if (compactMq.addEventListener) compactMq.addEventListener('change', syncDevice);
+  else if (compactMq.addListener) compactMq.addListener(syncDevice);
+
+  let W = 0, H = 0;
+  function resize() {
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    W = window.innerWidth;
+    H = window.innerHeight;
+    canvas.width = Math.max(1, Math.round(W * dpr));
+    canvas.height = Math.max(1, Math.round(H * dpr));
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    syncDevice();
+  }
+  window.addEventListener('resize', () => { resize(); fitTitle(); });
+  resize();
+  fitTitle();
+
+  /* ---------- Rotating cube (3D → 2D) ---------- */
+  const CUBE_VERTS = [
+    [-1, -1, -1], [1, -1, -1], [1, 1, -1], [-1, 1, -1],
+    [-1, -1, 1], [1, -1, 1], [1, 1, 1], [-1, 1, 1]
+  ];
+  const CUBE_EDGES = [
+    [0, 1], [1, 2], [2, 3], [3, 0],
+    [4, 5], [5, 6], [6, 7], [7, 4],
+    [0, 4], [1, 5], [2, 6], [3, 7]
+  ];
+
+  // Local space diagonal (-1,-1,-1)→(1,1,1); mapped to a screen-parallel spin axis
+  const CUBE_DIAG = (() => {
+    const inv = 1 / Math.sqrt(3);
+    return [inv, inv, inv];
+  })();
+  // Axis parallel to the screen (in view XY), slightly tilted for a clear silhouette
+  const CUBE_SCREEN_AXIS = (() => {
+    const x = 1, y = 0.42, z = 0;
+    const len = Math.hypot(x, y, z) || 1;
+    return [x / len, y / len, z / len];
+  })();
+
+  function rodrigues(x, y, z, ux, uy, uz, angle) {
+    const c = Math.cos(angle), s = Math.sin(angle), t = 1 - c;
+    const dot = x * ux + y * uy + z * uz;
+    const cxv = uy * z - uz * y;
+    const cyv = uz * x - ux * z;
+    const czv = ux * y - uy * x;
+    return [
+      x * c + cxv * s + ux * dot * t,
+      y * c + cyv * s + uy * dot * t,
+      z * c + czv * s + uz * dot * t
+    ];
+  }
+
+  // Fixed rotation that maps cube diagonal → screen-parallel axis
+  const CUBE_ALIGN = (() => {
+    const [fx, fy, fz] = CUBE_DIAG;
+    const [tx, ty, tz] = CUBE_SCREEN_AXIS;
+    const dot = Math.max(-1, Math.min(1, fx * tx + fy * ty + fz * tz));
+    if (dot > 0.9999) return { ux: 1, uy: 0, uz: 0, angle: 0 };
+    if (dot < -0.9999) {
+      // 180° around any perpendicular
+      let px = 0, py = -fz, pz = fy;
+      if (Math.hypot(px, py, pz) < 1e-6) { px = -fy; py = fx; pz = 0; }
+      const plen = Math.hypot(px, py, pz) || 1;
+      return { ux: px / plen, uy: py / plen, uz: pz / plen, angle: Math.PI };
+    }
+    let ax = fy * tz - fz * ty;
+    let ay = fz * tx - fx * tz;
+    let az = fx * ty - fy * tx;
+    const alen = Math.hypot(ax, ay, az) || 1;
+    return { ux: ax / alen, uy: ay / alen, uz: az / alen, angle: Math.acos(dot) };
+  })();
+
+  // Fixed +90° clockwise in screen space (SVG Y-down)
+  const CUBE_VIEW_CW90 = Math.PI / 2;
+
+  function projectCube(angle) {
+    const scale = 48;
+    const cx = 275, cy = 248;
+    const [sx, sy, sz] = CUBE_SCREEN_AXIS;
+    const { ux, uy, uz, angle: alignA } = CUBE_ALIGN;
+
+    const pts = CUBE_VERTS.map(([x0, y0, z0]) => {
+      // 1) Put the space diagonal into the screen plane
+      let [x, y, z] = rodrigues(x0, y0, z0, ux, uy, uz, alignA);
+      // 2) Spin around that screen-parallel axis only
+      [x, y, z] = rodrigues(x, y, z, sx, sy, sz, angle);
+      // 3) 90° clockwise about view axis (into the screen)
+      [x, y, z] = rodrigues(x, y, z, 0, 0, 1, CUBE_VIEW_CW90);
+      const persp = 2.8 / (2.8 - z * 0.55);
+      return [cx + x * scale * persp, cy + y * scale * persp];
+    });
+    let d = '';
+    for (const [i, j] of CUBE_EDGES) {
+      d += `M${pts[i][0].toFixed(1)} ${pts[i][1].toFixed(1)}L${pts[j][0].toFixed(1)} ${pts[j][1].toFixed(1)}`;
+    }
+    return d;
+  }
+
+  function ellipsePoint(cx, cy, rx, ry, rotDeg, t) {
+    const rot = rotDeg * Math.PI / 180;
+    const cos = Math.cos(rot), sin = Math.sin(rot);
+    const x = rx * Math.cos(t), y = ry * Math.sin(t);
+    return [cx + x * cos - y * sin, cy + x * sin + y * cos];
+  }
+
+  /** SVG local point → pixel position inside .orbit-stage */
+  function svgPointToStage(svgEl, x, y) {
+    if (!svgEl || !orbitStage) return [0, 0];
+    const svg = svgEl.ownerSVGElement || svgEl;
+    const pt = svg.createSVGPoint();
+    pt.x = x; pt.y = y;
+    const ctm = svgEl.getScreenCTM && svgEl.getScreenCTM();
+    if (!ctm) {
+      const vbW = 550, vbH = 520;
+      const sw = orbitStage.clientWidth, sh = orbitStage.clientHeight;
+      return [x / vbW * sw, y / vbH * sh];
+    }
+    const screen = pt.matrixTransform(ctm);
+    const rect = orbitStage.getBoundingClientRect();
+    return [screen.x - rect.left, screen.y - rect.top];
+  }
+
+  function bindLabelToNode(label, node, cx, cy) {
+    if (!label || !node) return;
+    const [nx, ny] = svgPointToStage(node, +node.getAttribute('cx'), +node.getAttribute('cy'));
+    const [ox, oy] = svgPointToStage(node.ownerSVGElement, cx, cy);
+    let dx = nx - ox, dy = ny - oy;
+    const len = Math.hypot(dx, dy) || 1;
+    dx = dx / len * 34;
+    dy = dy / len * 34;
+    label.style.transform = `translate(${(nx + dx).toFixed(1)}px, ${(ny + dy).toFixed(1)}px) translate(-50%, -50%)`;
+  }
+
+  let cubeAngle = 0.8;
+  function updateIntelligence(dt, animating) {
+    if (!cubeEl) return;
+    if (animating && !reduce) cubeAngle += dt * 0.55;
+
+    const nodes = [node1, node2, node3];
+    ORBITS.forEach((o, i) => {
+      const t = reduce ? o.phase : cubeAngle * o.speed + o.phase;
+      const [x, y] = ellipsePoint(275, 252, o.rx, o.ry, o.rot, t);
+      if (nodes[i]) {
+        nodes[i].setAttribute('cx', x.toFixed(1));
+        nodes[i].setAttribute('cy', y.toFixed(1));
+      }
+    });
+
+    // Labels glued to nodes (Strategy / Agentic / Governance)
+    bindLabelToNode(labelStrategy, node1, 275, 252);
+    bindLabelToNode(labelAgents, node2, 275, 252);
+    bindLabelToNode(labelGovernance, node3, 275, 252);
+
+    const path = document.getElementById('cube-path') || (() => {
+      const p = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      p.id = 'cube-path';
+      cubeEl.appendChild(p);
+      return p;
+    })();
+    const spin = reduce ? 0.9 : cubeAngle * 1.05;
+    path.setAttribute('d', projectCube(spin));
+  }
+  updateIntelligence(0, false);
+
+  function progress() {
+    const rect = hero.getBoundingClientRect();
+    const total = rect.height - stage.clientHeight;
+    if (total <= 0) return 1;
+    return clamp(-rect.top / total);
+  }
+
+  /*
+    Continuous lightspeed physics (shared for forward dock + reverse coast):
+      u  = scroll-driven target warp ∈ [0,1]
+      v  = actual warp velocity ∈ [0,1]     dv/dt = (u - v) / τ
+      s  = remaining distance to destination ∈ [0,1]   ds/dt = -v · k
+      docked when v≈0 and s≈0
+  */
+  const APPROACH_START = 0.50;
+  const DOCK_AT = 0.82;
+  const RESUME = 0.46;
+  const TAU = 0.20;          // coast time constant (s) — same both directions
+  const K_TRAVEL = 1.35;     // distance burn rate while warping
+  const S_DOCK = 0.04;       // dock threshold
+  const GAMMA = 10;          // motion blur px at full warp (stars / title; arrival uses lighter blur)
+  const V_IDLE = 0.05;
+  const V_MAX = 2.9;
+  const ARRIVAL_SCALE_MIN = 0.06; // pinprick at vanishing point
+
+  const easeIn = t => t * t * t;
+
+  function scrollWarp(p) {
+    const up = easeIn(range(p, 0.12, 0.30));
+    const shimmer = up > 0.98 ? 0.96 + 0.04 * Math.sin(performance.now() / 180) : 1;
+    return up * shimmer;
+  }
+
+  /** Target warp u(p): cruise until approach, then brake to 0 with scroll */
+  function targetWarp(p) {
+    if (p < APPROACH_START) return scrollWarp(p);
+    // Smooth brake from cruise level down to 0 as p → DOCK_AT
+    const cruise = scrollWarp(APPROACH_START);
+    const brake = 1 - smooth(range(p, APPROACH_START, DOCK_AT));
+    return cruise * brake;
+  }
+
+  let sp = 0, last = performance.now();
+  let v = 0;                 // warp velocity
+  let sDist = 1;             // remaining distance (avoid shadowing star `s`)
+  let docked = false;
+  let brakeAge = 0;          // seconds since braking began (for jolt)
+  let wasBraking = false;
+  let flashEnergy = 0;       // decays; fed by |dv/dt| spikes
+
+  /* End-of-page hyperspace return → hero */
+  const JUMP_DWELL = 0.2;
+  const JUMP_CHARGE = 0.32;
+  const JUMP_WARP = 0.7;
+  const JUMP_SETTLE = 0.55;
+  const JUMP_RESET_AT = 0.28; // while veil is fully opaque — scroll snap stays hidden
+  let jumpPhase = 'idle'; // idle | charge | warp | settle
+  let jumpT = 0;
+  let jumpArmed = true;
+  let endDwell = 0;
+  let jumpBoost = 0;
+  let jumpDidReset = false;
+  let jumpReveal = 1; // 0→1 brand re-form after return
+
+  function nearPageEnd() {
+    const root = document.documentElement;
+    const maxY = Math.max(0, root.scrollHeight - window.innerHeight);
+    if (maxY < 80) return false;
+    return window.scrollY >= maxY - 36;
+  }
+
+  function setVeil(opacity) {
+    if (!jumpVeil) return;
+    jumpVeil.style.opacity = String(clamp(opacity));
+  }
+
+  function resetHeroJourney() {
+    docked = false;
+    sDist = 1;
+    sp = 0;
+    // Keep residual warp; settle eases it down — avoids a hard stop
+    v = Math.max(v, 0.92);
+    flashEnergy = Math.max(flashEnergy, 0.55);
+    wasBraking = false;
+    brakeAge = 0;
+    jumpReveal = 0;
+    arrival.classList.remove('is-active');
+    arrival.style.visibility = 'hidden';
+    arrival.style.opacity = '0';
+    arrival.style.clipPath = '';
+    arrival.style.webkitClipPath = '';
+    arrival.style.filter = 'none';
+    arrival.style.transform = '';
+    brand.style.display = '';
+  }
+
+  function beginJump() {
+    if (jumpPhase !== 'idle' || !jumpArmed) return;
+    jumpArmed = false;
+    jumpPhase = reduce ? 'settle' : 'charge';
+    jumpT = 0;
+    jumpBoost = 0;
+    jumpDidReset = false;
+    jumpReveal = 1;
+    endDwell = 0;
+    if (reduce) {
+      document.documentElement.classList.add('is-jump-settle');
+      window.scrollTo(0, 0);
+      resetHeroJourney();
+      v = 0;
+      jumpReveal = 1;
+      jumpDidReset = true;
+    } else {
+      document.documentElement.classList.add('is-jumping');
+      setVeil(0);
+    }
+  }
+
+  function endJump() {
+    jumpPhase = 'idle';
+    jumpT = 0;
+    jumpBoost = 0;
+    jumpReveal = 1;
+    jumpDidReset = false;
+    document.documentElement.classList.remove('is-jumping', 'is-jump-settle');
+    setVeil(0);
+    // Re-arm after the user scrolls past the hero again
+    jumpArmed = false;
+  }
+
+  function frame(now) {
+    const dt = Math.min(0.05, (now - last) / 1000);
+    last = now;
+
+    // Arm / trigger return jump at the bottom of the page
+    if (jumpPhase === 'idle') {
+      if (!jumpArmed && window.scrollY > window.innerHeight * 1.25) jumpArmed = true;
+      if (jumpArmed && nearPageEnd()) {
+        endDwell += dt;
+        if (endDwell >= JUMP_DWELL) beginJump();
+      } else {
+        endDwell = 0;
+      }
+    } else {
+      jumpT += dt;
+      if (jumpPhase === 'charge') {
+        const t = smooth(clamp(jumpT / JUMP_CHARGE));
+        jumpBoost = t;
+        flashEnergy = Math.max(flashEnergy, 0.2 + t * 0.45);
+        // Soft white build — content already fading via .is-jumping
+        setVeil(0.05 + t * 0.35);
+        if (jumpT >= JUMP_CHARGE) {
+          jumpPhase = 'warp';
+          jumpT = 0;
+          jumpBoost = 1;
+        }
+      } else if (jumpPhase === 'warp') {
+        const tw = clamp(jumpT / JUMP_WARP);
+        jumpBoost = 1;
+        flashEnergy = Math.max(flashEnergy, 0.75);
+        // Veil: ease up to full white, hold through scroll reset, ease out to stars
+        let veilOp;
+        if (tw < 0.28) veilOp = smooth(tw / 0.28);
+        else if (tw < 0.52) veilOp = 1;
+        else veilOp = 1 - smooth((tw - 0.52) / 0.48);
+        setVeil(veilOp);
+
+        if (!jumpDidReset && jumpT >= JUMP_RESET_AT) {
+          window.scrollTo(0, 0);
+          resetHeroJourney();
+          jumpDidReset = true;
+        }
+        if (jumpT >= JUMP_WARP) {
+          jumpPhase = 'settle';
+          jumpT = 0;
+          document.documentElement.classList.remove('is-jumping');
+          document.documentElement.classList.add('is-jump-settle');
+          setVeil(0);
+        }
+      } else if (jumpPhase === 'settle') {
+        const ts = smooth(clamp(jumpT / JUMP_SETTLE));
+        jumpBoost = 1 - ts;
+        jumpReveal = ts;
+        if (jumpT >= JUMP_SETTLE) endJump();
+      }
+    }
+
+    sp += (progress() - sp) * Math.min(1, dt * (jumpPhase === 'settle' ? 6 : 12));
+    const p = reduce ? 0 : (jumpPhase !== 'idle' && jumpDidReset ? 0 : sp);
+
+    const charge = reduce ? 0 : smooth(range(p, 0, 0.12));
+
+    // --- velocity / distance integration ---
+    let u = reduce ? 0 : targetWarp(p);
+    if (docked && p >= DOCK_AT) u = 0;
+    if (jumpPhase === 'charge') u = Math.max(u, smooth(jumpBoost));
+    if (jumpPhase === 'warp') u = 1;
+    if (jumpPhase === 'settle') u = Math.max(u, (1 - jumpReveal) * 0.72);
+    if (!reduce && jumpPhase === 'idle' && p < RESUME) {
+      docked = false;
+      if (sDist < 0.15) sDist = 1; // re-arm journey when leaving destination upward
+    }
+
+    const vPrev = v;
+    // First-order lag: gentler during jump so streaks ramp / coast smoothly
+    const jumpTau = jumpPhase === 'charge' ? 0.28
+      : jumpPhase === 'warp' ? 0.12
+      : jumpPhase === 'settle' ? 0.42
+      : TAU;
+    const alpha = 1 - Math.exp(-dt / jumpTau);
+    v += (u - v) * alpha;
+    if (v < 0.0005) v = 0;
+    if (v > 1) v = 1;
+
+    const dvdt = (v - vPrev) / Math.max(dt, 1e-4);
+    const braking = jumpPhase === 'idle' && (dvdt < -0.15 || (p >= APPROACH_START && u < vPrev && v > 0.02));
+
+    if (braking) {
+      if (!wasBraking) brakeAge = 0;
+      brakeAge += dt;
+      wasBraking = true;
+      // Flash energy from deceleration magnitude
+      flashEnergy = Math.max(flashEnergy, clamp(-dvdt / 8) * 0.45);
+    } else {
+      wasBraking = false;
+      brakeAge = 0;
+    }
+    flashEnergy = Math.max(0, flashEnergy - dt * (jumpPhase === 'warp' ? 0.6 : 3.5));
+
+    // Burn distance only on the final approach leg (keeps destination at infinity during cruise)
+    if (!docked && !reduce && jumpPhase === 'idle') {
+      if (p >= APPROACH_START) {
+        if (v > 0.002) sDist = Math.max(0, sDist - v * K_TRAVEL * dt);
+        // Scroll couples into remaining distance so fast scrollers still arrive
+        const scrollS = 1 - smooth(range(p, APPROACH_START, DOCK_AT));
+        sDist = Math.min(sDist, scrollS);
+      } else if (p < RESUME) {
+        sDist = 1;
+      }
+      if (v < 0.025 && sDist <= S_DOCK && p >= APPROACH_START) {
+        docked = true;
+        sDist = 0;
+        v = 0;
+      }
+    }
+    if (docked) sDist = 0;
+
+    // Stars driven by v (identical coast whether scrolling up or docking)
+    // After dock: quiet idle drift continues behind the whole site
+    const trailScale = isCompact ? 0.48 : 0.62;
+    const idle = docked && jumpPhase === 'idle' ? 0.035 : V_IDLE;
+    const jumpMul = jumpPhase === 'idle' ? 1 : (1.08 + jumpBoost * 1.35);
+    const speed = (idle * (1 - 0.85 * charge * (v > 0.05 ? 1 : 0)) + V_MAX * v) * jumpMul;
+    const trail = (0.004 + trailScale * v) * (jumpPhase === 'idle' ? 1 : 1 + jumpBoost * 1.15);
+    const cx = W / 2, cy = H / 2;
+    const f = Math.max(W, H) * 0.42;
+    const starDim = jumpPhase !== 'idle'
+      ? 0.85 + 0.15 * jumpBoost
+      : docked
+        ? 0.62
+        : (0.55 + 0.45 * (0.25 + 0.75 * Math.max(v, charge * 0.25)));
+
+    // Under-damped jolt while braking (small)
+    const zeta = 0.55, omega = 18;
+    const jolt = (braking && brakeAge < 0.55)
+      ? Math.exp(-zeta * omega * brakeAge) * Math.cos(omega * Math.sqrt(1 - zeta * zeta) * brakeAge)
+      : 0;
+    const joltShake = (jumpPhase === 'warp' || jumpPhase === 'charge') && !isCompact
+      ? (0.6 + 1.1 * jumpBoost) * (jumpPhase === 'warp' ? 1 : 0.55)
+      : (braking && !isCompact) ? 3.2 * Math.exp(-brakeAge * 10) * clamp(-dvdt / 4) : 0;
+
+    ctx.globalCompositeOperation = 'source-over';
+    // Same sky through jump + rest of site
+    ctx.fillStyle = '#000';
+    ctx.fillRect(0, 0, W, H);
+    ctx.globalCompositeOperation = 'lighter';
+    ctx.lineCap = 'round';
+
+    const count = Math.min(stars.length, starTarget);
+    for (let i = 0; i < count; i++) {
+      const star = stars[i];
+      star.z -= speed * dt;
+      if (star.z <= 0.015) { Object.assign(star, makeStar(false)); continue; }
+      const hx = cx + (star.x / star.z) * f;
+      const hy = cy + (star.y / star.z) * f;
+      if (hx < -50 || hx > W + 50 || hy < -50 || hy > H + 50) { Object.assign(star, makeStar(false)); continue; }
+      const tz = Math.min(1.4, star.z + trail);
+      const tx = cx + (star.x / tz) * f;
+      const ty = cy + (star.y / tz) * f;
+
+      const near = 1 - star.z;
+      const a = Math.min(1, near * 1.45 + 0.16) * (0.7 + 0.3 * Math.max(v, jumpBoost, charge * 0.35, docked ? 0.55 : 0)) * starDim;
+      const jumpWidth = jumpPhase === 'idle' ? 0 : jumpBoost * 1.55;
+      let r = 255, g = 255, b = 255;
+      if (star.tone < 0.42) { [r, g, b] = accent; }
+      else if (star.tone < 0.6) { r = (accent[0] + 255) / 2; g = (accent[1] + 255) / 2; b = (accent[2] + 255) / 2; }
+
+      ctx.strokeStyle = `rgba(${r},${g},${b},${a.toFixed(3)})`;
+      ctx.lineWidth = 0.4 + near * near * (1.6 + v * 1.4 + jumpWidth);
+      ctx.beginPath();
+      ctx.moveTo(tx, ty);
+      ctx.lineTo(hx + 0.01, hy);
+      ctx.stroke();
+    }
+
+    if (!reduce) {
+      const sx = (Math.random() - 0.5) * joltShake;
+      const sy = (Math.random() - 0.5) * joltShake;
+      const lurch = 1 + 0.012 * jolt;
+      canvas.style.transform = ((jumpPhase !== 'idle' || !docked) && (joltShake > 0.05 || Math.abs(jolt) > 0.002))
+        ? `translate3d(${sx.toFixed(1)}px,${sy.toFixed(1)}px,0) scale(${lurch.toFixed(4)})`
+        : '';
+
+      const glow = charge * (1 - range(p, 0.12, 0.28));
+      // After return jump: title reforms from stretched lightspeed, then rests
+      const reform = jumpDidReset ? (1 - jumpReveal) : 0;
+      brand.style.transform = `translate3d(0,0,0) scale(${(1 - 0.04 * charge - 0.03 * reform).toFixed(4)})`;
+      const reformGlow = Math.max(glow, reform * 0.55);
+      titleEl.style.textShadow = reformGlow > 0.01
+        ? `0 0 ${(18 * reformGlow).toFixed(0)}px rgba(255,255,255,${(0.28 * reformGlow).toFixed(2)})`
+        : 'none';
+
+      const t = range(p, 0.12, 0.32);
+      const stretch = Math.max(t * t, reform * reform * 0.85);
+      const mid = (letters.length - 1) / 2;
+      const titleOpBase = Math.max(0, 1 - Math.pow(t, 1.35)) * (sDist > 0.85 ? 1 : clamp((sDist - 0.55) / 0.3));
+      const titleOp = jumpDidReset
+        ? Math.min(1, 0.25 + jumpReveal * 0.75)
+        : titleOpBase;
+      const blurAmt = Math.max(t * 8, reform * 7);
+      letters.forEach((el, i) => {
+        const off = (i - mid) / Math.max(1, mid);
+        el.style.transform = `translate3d(${(off * stretch * W * 0.42).toFixed(1)}px,0,0) scale(${(1 + stretch * 3.2).toFixed(3)})`;
+        el.style.opacity = titleOp;
+        el.style.filter = blurAmt > 0.04 ? `blur(${blurAmt.toFixed(1)}px)` : 'none';
+        el.style.textShadow = '';
+      });
+      tagline.style.opacity = (jumpDidReset ? jumpReveal * titleOp : titleOp).toFixed(3);
+      tagline.style.transform = '';
+      tagline.style.filter = blurAmt > 0.04 ? `blur(${(blurAmt * 0.75).toFixed(1)}px)` : 'none';
+      brand.style.opacity = titleOp < 0.02 ? '0' : '1';
+
+      hint.style.opacity = jumpDidReset
+        ? String(jumpReveal * Math.max(0, 1 - p * 10))
+        : String(Math.max(0, 1 - p * 10));
+
+      flash.style.opacity = (flashEnergy * (jumpPhase === 'idle' ? 0.55 : 0.35)).toFixed(3);
+
+      // Destination emerges from tunnel vanishing point → full layout
+      const approach = 1 - sDist;
+      const showDest = approach > 0.02 || docked;
+      if (!showDest) {
+        arrival.style.visibility = 'hidden';
+        arrival.classList.remove('is-active');
+        arrival.style.opacity = '0';
+        arrival.style.clipPath = '';
+        arrival.style.webkitClipPath = '';
+      } else {
+        const grow = smooth(clamp(approach));
+        const sc = ARRIVAL_SCALE_MIN + (1 - ARRIVAL_SCALE_MIN) * grow;
+        // Visible early so growth reads through the warp, not only after halt
+        const op = smooth(clamp((approach - 0.04) / 0.72));
+        const bl = docked ? 0 : Math.min(2.2, 1.1 * v);
+        const z = -780 * sDist;
+        const aperture = docked || approach > 0.97
+          ? 'none'
+          : `circle(${(4 + 146 * grow).toFixed(1)}% at 50% 50%)`;
+        arrival.style.visibility = 'visible';
+        arrival.style.opacity = Math.max(op, docked ? 1 : 0).toFixed(3);
+        arrival.style.transform =
+          `translate3d(0,0,${z.toFixed(1)}px) scale(${sc.toFixed(4)})`;
+        arrival.style.filter = bl > 0.04 ? `blur(${bl.toFixed(1)}px)` : 'none';
+        arrival.style.clipPath = aperture;
+        arrival.style.webkitClipPath = aperture;
+        if (docked || (op > 0.45 && v < 0.14 && sc > 0.55)) arrival.classList.add('is-active');
+        else arrival.classList.remove('is-active');
+      }
+
+      updateIntelligence(dt, showDest || docked || p >= APPROACH_START);
+    } else {
+      updateIntelligence(0, false);
+    }
+
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
+</script>
+<script src="assets/engine.js"></script>
+<script src="assets/lab.js"></script>
+<script src="assets/locations-map.js"></script>
+<script src="assets/industries-pixel.js"></script>
+<script src="assets/architecture.js"></script>
+<script src="assets/chat.js"></script>
+<script>
+(() => {
+  const form = document.getElementById('strategy-form');
+  if (!form) return;
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    if (!form.checkValidity()) {
+      form.reportValidity();
+      return;
+    }
+    form.classList.add('is-sent');
+  });
+})();
+</script>
+<script>
+(() => {
+  const copy = document.querySelector('#expertise .expertise-copy');
+  if (!copy) return;
+  if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    copy.classList.add('is-inview');
+    return;
+  }
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e) => {
+      if (!e.isIntersecting) return;
+      copy.classList.add('is-inview');
+      io.disconnect();
+    });
+  }, { threshold: 0.35 });
+  io.observe(copy);
+})();
+</script>
+</body>
+</html>
