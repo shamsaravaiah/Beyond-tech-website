@@ -1199,10 +1199,10 @@
   @media (max-width: 900px) {
     .arrival {
       grid-template-columns: 1fr;
-      padding: 88px 6vw 40px;
-      overflow: hidden;
-      align-content: center;
-      gap: 0;
+      padding: 88px 6vw 48px;
+      overflow: auto;
+      align-content: start;
+      gap: 28px;
     }
     .arrival-copy { max-width: 36rem; }
     .arrival h2 {
@@ -1228,8 +1228,9 @@
       justify-content: center;
     }
     .arrival-note { margin-top: 28px; }
-    /* Keep orbit/cube as a desktop-only companion; stacking it under CTAs felt like a fake next section */
-    .hero-visual { display: none; }
+    .hero-visual { display: block; min-height: 0; max-width: 520px; width: 100%; margin: 0 auto; }
+    .orbit-stage, .orbit { min-height: 280px; }
+    .visual-bottom { font-size: 8px; letter-spacing: 1.2px; gap: 12px; }
     .expertise-layout { grid-template-columns: 1fr; gap: 36px; align-items: start; }
     .expertise-copy h2 { max-width: none; }
     .industries-grid {
