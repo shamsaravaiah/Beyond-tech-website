@@ -176,6 +176,7 @@
     text-transform: uppercase;
   }
   .title span { display: inline-block; white-space: pre; will-change: transform, opacity, filter; }
+  .title-break { display: none; }
   .tagline {
     margin: 0;
     max-width: min(92vw, 720px);
@@ -1198,18 +1199,42 @@
   @media (max-width: 900px) {
     .arrival {
       grid-template-columns: 1fr;
-      padding-top: 80px;
+      padding: 88px 6vw 48px;
       overflow: auto;
       align-content: start;
+      gap: 28px;
     }
+    .arrival h2 {
+      font-size: clamp(28px, 7vw, 48px);
+      margin-bottom: 18px;
+    }
+    .arrival p.lead {
+      max-width: none;
+      font-size: 15px;
+      line-height: 1.7;
+    }
+    .arrival-actions {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 16px;
+      margin-top: 24px;
+    }
+    .arrival-actions .cta-primary {
+      justify-content: center;
+      width: 100%;
+    }
+    .arrival-actions .cta-secondary {
+      justify-content: center;
+    }
+    .arrival-note { margin-top: 28px; }
     .hero-visual { min-height: 0; max-width: 520px; width: 100%; margin: 0 auto; }
-    .orbit-stage, .orbit { min-height: 320px; }
+    .orbit-stage, .orbit { min-height: 280px; }
     .visual-bottom { font-size: 8px; letter-spacing: 1.2px; gap: 12px; }
     .expertise-layout { grid-template-columns: 1fr; gap: 36px; align-items: start; }
     .expertise-copy h2 { max-width: none; }
     .industries-grid {
       grid-template-columns: 1fr 1fr;
-      gap: 14px;
+      gap: 16px;
     }
     .about-grid, .contact-grid { grid-template-columns: 1fr; }
     .section-heading { flex-direction: column; align-items: start; gap: 20px; }
@@ -1218,6 +1243,12 @@
   @media (max-width: 768px) {
     :root { --scroll-length: 140vh; }
     html { scroll-snap-type: none; }
+    .wrap,
+    .section > .wrap,
+    .section.wrap,
+    .bt-locations > .wrap,
+    .about-section > .wrap,
+    .contact-section > .wrap { width: min(1280px, 90%); }
     .section,
     .bt-locations,
     .bt-arch,
@@ -1225,7 +1256,7 @@
     .contact-section,
     .industries-section {
       min-height: 0;
-      padding: 72px 0;
+      padding: 80px 0;
       justify-content: flex-start;
       scroll-snap-align: none;
     }
@@ -1268,10 +1299,25 @@
       justify-content: center;
       text-align: center;
     }
-    .brand { gap: 14px; }
-    .title { font-size: clamp(32px, 11vw, 96px); letter-spacing: 0.06em; }
-    .tagline { font-size: 14px; max-width: 90vw; }
-    .hint { bottom: 28px; }
+    .brand { gap: 14px; padding: 0 4vw; }
+    .title {
+      flex-wrap: wrap;
+      width: min(92vw, 1600px);
+      font-size: clamp(40px, 14vw, 72px);
+      letter-spacing: 0.04em;
+      line-height: 0.95;
+      row-gap: 0.08em;
+    }
+    .title-break {
+      display: block;
+      flex-basis: 100%;
+      width: 100%;
+      height: 0;
+      overflow: hidden;
+    }
+    .tagline { font-size: 14px; max-width: 88vw; line-height: 1.45; }
+    .hint { bottom: 28px; letter-spacing: .18em; }
+    .orbit-stage, .orbit { min-height: 240px; }
     .visual-bottom { flex-wrap: nowrap; overflow: hidden; }
     .lab-mobile-summary {
       display: block;
@@ -1313,7 +1359,7 @@
     html { scroll-behavior: auto; scroll-snap-type: none; }
   }
 
-  /* ---------- Chat widget ---------- */
+  /* ---------- Chat widget — Signal console ---------- */
   .bt-chat {
     position: fixed;
     right: max(16px, env(safe-area-inset-right));
@@ -1323,65 +1369,157 @@
   }
   .bt-chat__fab {
     display: inline-flex; align-items: center; gap: 10px;
-    padding: 12px 16px;
+    padding: 11px 14px;
     border: 1px solid #555; border-radius: 4px;
-    background: #fff; color: #0a0a0a;
-    font: inherit; font-size: 12px; font-weight: 600;
+    background: rgba(0,0,0,.72);
+    color: #eee;
+    font: inherit;
     cursor: pointer;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     box-shadow: 0 10px 40px rgba(0,0,0,.45);
+    transition: border-color .2s ease, color .2s ease, background .2s ease;
   }
-  .bt-chat__fab:hover { background: #0a0a0a; color: #fff; border-color: #fff; }
+  .bt-chat__fab:hover,
+  .bt-chat__fab:focus-visible {
+    border-color: var(--cyan); color: #fff; outline: none;
+  }
+  .bt-chat__fab[aria-expanded="true"] {
+    border-color: #c8c8c8; background: rgba(255,255,255,.06);
+  }
+  .bt-chat__fab-led {
+    width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0;
+    background: #ddd;
+    box-shadow: 0 0 10px rgba(255,255,255,.25);
+    animation: bt-chat-led-idle 2.4s ease-in-out infinite;
+  }
+  .bt-chat.is-open .bt-chat__fab-led,
+  .bt-chat[data-status="ready"].is-open .bt-chat__fab-led {
+    animation: none;
+    background: #fff;
+    box-shadow: 0 0 12px rgba(255,255,255,.45);
+  }
+  .bt-chat[data-status="thinking"] .bt-chat__fab-led {
+    animation: bt-chat-led-think .55s steps(2, end) infinite;
+    background: #fff;
+  }
+  .bt-chat[data-status="handoff"] .bt-chat__fab-led {
+    animation: none;
+    background: #fff;
+    box-shadow: 0 0 14px rgba(255,255,255,.55);
+  }
+  .bt-chat__fab-label {
+    font-family: 'IBM Plex Mono', 'IBM Plex Sans', monospace;
+    font-size: 11px; font-weight: 500;
+    letter-spacing: .14em; text-transform: uppercase;
+  }
+  .bt-chat__fab-code {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px; letter-spacing: .12em;
+    color: #888; text-transform: uppercase;
+  }
   .bt-chat__panel {
     position: absolute;
     right: 0; bottom: calc(100% + 12px);
-    width: min(360px, calc(100vw - 32px));
-    max-height: min(520px, calc(100vh - 120px));
+    width: min(380px, calc(100vw - 32px));
+    max-height: min(540px, calc(100vh - 120px));
     display: flex; flex-direction: column;
-    background: rgba(10,10,10,.96);
-    border: 1px solid #2a2a2a; border-radius: 6px;
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
+    background: rgba(0,0,0,.88);
+    border: 1px solid var(--line); border-radius: 6px;
+    backdrop-filter: blur(18px) saturate(1.05);
+    -webkit-backdrop-filter: blur(18px) saturate(1.05);
     box-shadow: 0 20px 60px rgba(0,0,0,.55);
     overflow: hidden;
+    opacity: 0;
+    transform: translateY(10px);
+    pointer-events: none;
+    transition: opacity .35s cubic-bezier(0.22, 1, 0.36, 1), transform .35s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .bt-chat__panel.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
   }
   .bt-chat__panel[hidden] { display: none !important; }
   .bt-chat__head {
-    display: flex; justify-content: space-between; gap: 12px; align-items: start;
-    padding: 16px 16px 12px;
-    border-bottom: 1px solid #222;
+    display: flex; justify-content: space-between; gap: 12px; align-items: flex-start;
+    padding: 14px 16px 12px;
+    border-bottom: 1px solid #1f1f1f;
   }
+  .bt-chat__head-main { min-width: 0; }
   .bt-chat__eyebrow {
-    margin: 0 0 4px;
-    font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: #888;
+    display: flex; align-items: center; gap: 8px;
+    margin: 0 0 6px;
+    font-family: 'IBM Plex Mono', 'IBM Plex Sans', monospace;
+    font-size: 10px; font-weight: 500;
+    letter-spacing: .16em; text-transform: uppercase; color: #8a8a8a;
+  }
+  .bt-chat__eyebrow-led {
+    width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0;
+    background: #ddd;
+    box-shadow: 0 0 10px rgba(255,255,255,.25);
+  }
+  .bt-chat[data-status="thinking"] .bt-chat__eyebrow-led {
+    animation: bt-chat-led-think .55s steps(2, end) infinite;
   }
   .bt-chat__head h2 {
     margin: 0;
-    font-size: 18px; font-weight: 500; letter-spacing: -0.02em;
+    font-size: 17px; font-weight: 500; letter-spacing: -0.02em; color: #f0f0f0;
+  }
+  .bt-chat__meta {
+    margin: 6px 0 0;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px; letter-spacing: .14em;
+    text-transform: uppercase; color: #666;
   }
   .bt-chat__close {
-    appearance: none; border: 0; background: transparent;
-    color: #aaa; font-size: 16px; cursor: pointer; padding: 4px 6px;
+    appearance: none;
+    width: 32px; height: 32px; flex-shrink: 0;
+    border: 1px solid #333; border-radius: 4px;
+    background: transparent; color: #aaa;
+    font-size: 14px; line-height: 1; cursor: pointer;
+    transition: border-color .2s ease, color .2s ease;
   }
-  .bt-chat__close:hover { color: #fff; }
+  .bt-chat__close:hover,
+  .bt-chat__close:focus-visible {
+    border-color: #fff; color: #fff; outline: none;
+  }
   .bt-chat__messages {
     flex: 1; overflow: auto;
     padding: 14px 16px;
-    display: flex; flex-direction: column; gap: 10px;
-    min-height: 180px;
+    display: flex; flex-direction: column; gap: 8px;
+    min-height: 160px;
   }
-  .bt-chat__bubble {
-    max-width: 92%;
-    padding: 10px 12px;
+  .bt-chat__row {
+    display: grid;
+    grid-template-columns: 42px minmax(0, 1fr);
+    gap: 10px;
+    align-items: start;
+    max-width: 100%;
+    padding: 9px 11px;
+    border: 1px solid var(--line);
     border-radius: 4px;
-    font-size: 13px; line-height: 1.55;
+    background: rgba(17,17,17,.85);
+    font-size: 13px; line-height: 1.55; color: #ddd;
   }
-  .bt-chat__bubble--bot {
-    align-self: flex-start;
-    background: #151515; border: 1px solid #2a2a2a; color: #ddd;
-  }
-  .bt-chat__bubble--user {
+  .bt-chat__row--user {
+    grid-template-columns: 48px minmax(0, 1fr);
     align-self: flex-end;
-    background: #fff; color: #0a0a0a;
+    max-width: 94%;
+    background: #fff; border-color: #fff; color: #0a0a0a;
+  }
+  .bt-chat__who {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px; font-weight: 500;
+    letter-spacing: .12em; text-transform: uppercase;
+    color: #888; padding-top: 2px;
+  }
+  .bt-chat__row--user .bt-chat__who { color: #444; }
+  .bt-chat__text { min-width: 0; }
+  .bt-chat__row.is-typing .bt-chat__text {
+    overflow: hidden;
+    border-right: 1px solid rgba(255,255,255,.35);
+    animation: bt-chat-caret .8s steps(1, end) infinite;
   }
   .bt-chat__chips {
     display: flex; flex-wrap: wrap; gap: 8px;
@@ -1389,42 +1527,108 @@
   }
   .bt-chat__chips button {
     appearance: none; cursor: pointer;
-    border: 1px solid #333; border-radius: 99px;
-    background: transparent; color: #ccc;
-    font: inherit; font-size: 11px;
-    padding: 7px 11px;
+    min-height: 32px;
+    border: 1px solid #2a2a2a; border-radius: 4px;
+    background: transparent; color: #b0b0b0;
+    font-family: 'IBM Plex Mono', 'IBM Plex Sans', monospace;
+    font-size: 10px; letter-spacing: .1em; text-transform: uppercase;
+    padding: 0 12px;
+    transition: border-color .2s ease, color .2s ease, background .2s ease;
   }
-  .bt-chat__chips button:hover { border-color: #fff; color: #fff; }
+  .bt-chat__chips button:hover,
+  .bt-chat__chips button:focus-visible {
+    border-color: #555; color: #fff; outline: none;
+  }
+  .bt-chat__chips button[aria-pressed="true"] {
+    border-color: #c8c8c8; color: #fff; background: rgba(255,255,255,.08);
+  }
+  .bt-chat__strip {
+    border-top: 1px solid #1f1f1f;
+    padding: 10px 16px 12px;
+    background: rgba(0,0,0,.35);
+  }
   .bt-chat__form {
-    display: flex; gap: 8px;
-    padding: 0 16px 12px;
-    border-top: 1px solid #222;
-    padding-top: 12px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .bt-chat__prompt {
+    flex-shrink: 0;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px; font-weight: 500;
+    letter-spacing: .08em; color: #a8a8a8;
   }
   .bt-chat__form input {
-    flex: 1;
-    background: #0a0a0a; color: #eee;
-    border: 1px solid #333; border-radius: 3px;
-    padding: 10px 12px; font: inherit; font-size: 13px;
+    flex: 1; min-width: 0;
+    background: transparent; color: #eee;
+    border: 0; border-bottom: 1px solid #333; border-radius: 0;
+    padding: 8px 0; font: inherit; font-size: 13px;
   }
-  .bt-chat__form button {
-    appearance: none; cursor: pointer;
-    border: 1px solid #fff; border-radius: 3px;
+  .bt-chat__form input::placeholder { color: #666; }
+  .bt-chat__form input:focus {
+    outline: none; border-bottom-color: #aaa;
+  }
+  .bt-chat__form button[type="submit"] {
+    appearance: none; cursor: pointer; flex-shrink: 0;
+    border: 1px solid #fff; border-radius: 4px;
     background: #fff; color: #0a0a0a;
-    font: inherit; font-size: 12px; font-weight: 600;
-    padding: 0 14px;
+    font-family: 'IBM Plex Mono', 'IBM Plex Sans', monospace;
+    font-size: 10px; font-weight: 500;
+    letter-spacing: .12em; text-transform: uppercase;
+    padding: 9px 12px;
+    transition: background .2s ease, color .2s ease;
   }
+  .bt-chat__form button[type="submit"]:hover,
+  .bt-chat__form button[type="submit"]:focus-visible {
+    background: transparent; color: #fff; outline: none;
+  }
+  .bt-chat__status-row {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    margin-top: 10px;
+  }
+  .bt-chat__status {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px; letter-spacing: .14em;
+    text-transform: uppercase; color: #666;
+  }
+  .bt-chat[data-status="thinking"] .bt-chat__status { color: #b0b0b0; }
+  .bt-chat[data-status="handoff"] .bt-chat__status { color: #ddd; }
   .bt-chat__handoff {
-    display: block;
-    margin: 0 16px 16px;
-    text-align: center;
-    font-size: 12px; font-weight: 500; color: #ddd;
-    border-top: 1px solid #222; padding-top: 12px;
+    font-size: 11px; font-weight: 500; color: #a8a8a8;
+    text-decoration: none; white-space: nowrap;
+    transition: color .2s ease;
   }
-  .bt-chat__handoff:hover { color: #fff; }
+  .bt-chat__handoff:hover,
+  .bt-chat__handoff:focus-visible { color: #fff; outline: none; }
+  @keyframes bt-chat-led-idle {
+    0%, 100% { opacity: .45; box-shadow: 0 0 6px rgba(255,255,255,.12); }
+    50% { opacity: 1; box-shadow: 0 0 12px rgba(255,255,255,.35); }
+  }
+  @keyframes bt-chat-led-think {
+    0%, 100% { opacity: 1; }
+    50% { opacity: .2; }
+  }
+  @keyframes bt-chat-caret {
+    50% { border-right-color: transparent; }
+  }
   @media (max-width: 640px) {
-    .bt-chat__fab span { display: none; }
-    .bt-chat__fab { padding: 14px; border-radius: 4px; }
+    .bt-chat {
+      right: max(12px, env(safe-area-inset-right));
+      bottom: max(12px, env(safe-area-inset-bottom));
+      left: max(12px, env(safe-area-inset-left));
+    }
+    .bt-chat__fab { padding: 12px 14px; }
+    .bt-chat__fab-code { display: none; }
+    .bt-chat__panel {
+      left: 0; right: 0; width: auto;
+      bottom: calc(100% + 10px);
+      max-height: min(70vh, calc(100vh - 100px));
+      border-radius: 6px 6px 4px 4px;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .bt-chat__fab-led,
+    .bt-chat__eyebrow-led,
+    .bt-chat__row.is-typing .bt-chat__text { animation: none; }
+    .bt-chat__panel { transition: none; }
   }
 </style>
 </head>
@@ -1443,7 +1647,7 @@
     <a href="#experience">AI in action</a>
     <a href="#locations">Markets</a>
     <a href="#architecture">About</a>
-    <a class="nav-cta" href="#contact">Let’s talk <span>↗</span></a>
+    <a class="nav-cta" href="#contact">Let’s talk</a>
   </nav>
   <button type="button" class="nav-toggle" id="nav-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="Open menu">
     <span></span><span></span>
@@ -2020,31 +2224,39 @@
   </footer>
 </div>
 
-<div class="bt-chat" id="bt-chat">
-  <button type="button" class="bt-chat__fab" id="bt-chat-fab" aria-expanded="false" aria-controls="bt-chat-panel">
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M5 6.5h14v8.5H9.2L5 18.5V6.5z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
-    </svg>
-    <span>Ask</span>
+<div class="bt-chat" id="bt-chat" data-status="ready">
+  <button type="button" class="bt-chat__fab" id="bt-chat-fab" aria-expanded="false" aria-controls="bt-chat-panel" aria-label="Open signal channel">
+    <span class="bt-chat__fab-led" aria-hidden="true"></span>
+    <span class="bt-chat__fab-label">Chat</span>
+    <span class="bt-chat__fab-code">CH-01</span>
   </button>
   <div class="bt-chat__panel" id="bt-chat-panel" role="dialog" aria-labelledby="bt-chat-title" hidden>
     <div class="bt-chat__head">
-      <div>
-        <p class="bt-chat__eyebrow">Beyond Tech</p>
-        <h2 id="bt-chat-title">Ask a question</h2>
+      <div class="bt-chat__head-main">
+        <p class="bt-chat__eyebrow">
+          <span class="bt-chat__eyebrow-led" aria-hidden="true"></span>
+          Channel · Live
+        </p>
+        <h2 id="bt-chat-title">Ask Beyond Tech</h2>
+        <p class="bt-chat__meta">BT / CH-01</p>
       </div>
-      <button type="button" class="bt-chat__close" id="bt-chat-close" aria-label="Close chat">✕</button>
+      <button type="button" class="bt-chat__close" id="bt-chat-close" aria-label="Close signal channel">✕</button>
     </div>
     <div class="bt-chat__messages" id="bt-chat-messages" aria-live="polite"></div>
     <div class="bt-chat__chips" id="bt-chat-chips"></div>
-    <form class="bt-chat__form" id="bt-chat-form">
-      <label class="sr-only" for="bt-chat-input">Your message</label>
-      <input id="bt-chat-input" type="text" autocomplete="off" placeholder="Ask about strategy, markets, or next steps…">
-      <button type="submit">Send</button>
-    </form>
-    <a class="bt-chat__handoff" href="#contact">Book a strategy session ↗</a>
+    <div class="bt-chat__strip">
+      <form class="bt-chat__form" id="bt-chat-form">
+        <span class="bt-chat__prompt" aria-hidden="true">BT ›</span>
+        <label class="sr-only" for="bt-chat-input">Your message</label>
+        <input id="bt-chat-input" type="text" autocomplete="off" placeholder="strategy, markets, next steps…">
+        <button type="submit">Send ↗</button>
+      </form>
+      <div class="bt-chat__status-row">
+        <p class="bt-chat__status" id="bt-chat-status">Ready</p>
+        <a class="bt-chat__handoff" id="bt-chat-handoff" href="#contact">Book a strategy session ↗</a>
+      </div>
+    </div>
   </div>
-</div>
 </div>
 
 <script>
@@ -2105,22 +2317,36 @@
   const range = (p, a, b) => clamp((p - a) / (b - a));
   const smooth = t => t * t * (3 - 2 * t);
 
-  const letters = WORD.split('').map(ch => {
+  const letters = [];
+  WORD.split('').forEach((ch) => {
+    if (ch === ' ') {
+      const br = document.createElement('span');
+      br.className = 'title-break';
+      br.setAttribute('aria-hidden', 'true');
+      titleEl.appendChild(br);
+      return;
+    }
     const s = document.createElement('span');
     s.setAttribute('aria-hidden', 'true');
-    s.textContent = ch === ' ' ? '\u00a0\u00a0' : ch;
+    s.textContent = ch;
     titleEl.appendChild(s);
-    return s;
+    letters.push(s);
   });
 
   // Scale Rostex as large as possible while still fitting the screen
   function fitTitle() {
     titleEl.style.fontSize = '';
-    const maxW = Math.min(window.innerWidth * 0.98, 1600);
+    const compact = compactMq.matches;
+    const maxW = Math.min(window.innerWidth * (compact ? 0.92 : 0.98), 1600);
+    const prevWidth = titleEl.style.width;
+    titleEl.style.width = 'max-content';
     const natural = titleEl.scrollWidth || titleEl.getBoundingClientRect().width;
+    titleEl.style.width = prevWidth;
     if (natural <= 1) return;
-    const current = parseFloat(getComputedStyle(titleEl).fontSize) || 96;
-    const next = Math.max(36, Math.min(180, current * (maxW / natural) * 0.99));
+    const current = parseFloat(getComputedStyle(titleEl).fontSize) || (compact ? 56 : 96);
+    const minPx = compact ? 34 : 36;
+    const maxPx = compact ? 72 : 180;
+    const next = Math.max(minPx, Math.min(maxPx, current * (maxW / natural) * 0.98));
     titleEl.style.fontSize = `${next.toFixed(1)}px`;
   }
   if (document.fonts && document.fonts.ready) {
@@ -2170,6 +2396,7 @@
     );
     while (stars.length < starTarget) stars.push(makeStar(true));
     if (stars.length > starTarget) stars.length = starTarget;
+    fitTitle();
   }
   syncDevice();
   if (compactMq.addEventListener) compactMq.addEventListener('change', syncDevice);
